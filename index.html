@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home Customer Report</title>
+<link rel="icon" type="image/svg+xml" href="assets/55icon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/55icon-192.png">
+<link rel="icon" href="55icon.ico" sizes="32x32">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/55icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0d1b2a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HC Report">
+<meta name="application-name" content="HC Report">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; background: #f0f0f0; font-family: 'Roboto Condensed', 'Sarabun', Arial, sans-serif; color: #111; }
+
+  /* ---------- LOGIN ---------- */
+  #loginView { min-height: 100%; display: flex; align-items: center; justify-content: flex-end; padding: 40px clamp(20px, 8vw, 160px); }
+  .card { background: #fff; border: 2px solid #0d1b2a; border-radius: 18px; padding: 26px 30px 22px; width: 100%; max-width: 520px; }
+  .brandmark { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-bottom: 14px; }
+  .brandmark .badge { width: 52px; height: 52px; border-radius: 13px; background: #0d1b2a; display: flex; align-items: center; justify-content: center; flex: none; }
+  .brandmark .badge svg { width: 34px; height: 34px; color: #fff; }
+  .topbar .brand svg { width: 26px; height: 26px; color: #fff; vertical-align: -5px; margin-right: 8px; }
+  .card h1 { margin: 0 0 18px; text-align: right; font-size: clamp(24px, 3.2vw, 36px); font-weight: 700; letter-spacing: .5px; text-transform: uppercase; }
+  .field { text-align: right; margin-bottom: 16px; }
+  label { display: block; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; }
+  .card input { width: 100%; max-width: 310px; padding: 7px 12px; font-family: inherit; font-size: 15px; text-align: right; background: #fff; border: 2px solid #000; outline: none; }
+  .card input::placeholder { color: #f9c6cf; }
+  .card input:focus { box-shadow: 0 0 0 2px rgba(0,0,0,.15); }
+  .actions { text-align: right; }
+  .btn { background: #000; color: #fff; font-family: inherit; font-size: 15px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; border: none; padding: 9px 22px; cursor: pointer; }
+  .btn:hover { background: #333; }
+  .btn.lg { font-size: 16px; padding: 10px 44px; }
+  .btn.ghost { background: #fff; color: #000; border: 2px solid #000; }
+  .btn.ghost:hover { background: #eee; }
+  .btn.sm { font-size: 12px; padding: 5px 12px; letter-spacing: .3px; }
+  .btn.danger { background: #b3261e; }
+  .btn.danger:hover { background: #8e1e18; }
+  .forgot { display: inline-block; margin-top: 8px; font-size: 14px; color: #1a73e8; text-decoration: underline; }
+  .msg { text-align: right; color: #b3261e; font-size: 13px; margin-top: 6px; min-height: 18px; }
+
+  /* ---------- APP ---------- */
+  #appView { display: none; min-height: 100%; flex-direction: column; }
+  .topbar { background: #0d1b2a; color: #fff; display: flex; align-items: center; gap: 12px; padding: 12px 20px; flex-wrap: wrap; }
+  .topbar .brand { font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+  .topbar .spacer { flex: 1; }
+  .topbar .who { font-size: 14px; opacity: .85; }
+  .chip { background: #fff; color: #0d1b2a; font-weight: 700; font-size: 14px; padding: 5px 12px; border-radius: 20px; }
+  .chip.locked { background: #ffd166; }
+  .avatarbtn { background: none; border: 2px solid #fff; border-radius: 50%; padding: 0; width: 36px; height: 36px; cursor: pointer; overflow: hidden; flex: none; }
+  .avatarbtn img { width: 100%; height: 100%; display: block; object-fit: cover; }
+  .avgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 10px; margin-top: 8px; }
+  .avgrid button { background: none; border: 2px solid transparent; border-radius: 50%; padding: 0; cursor: pointer; aspect-ratio: 1; overflow: hidden; }
+  .avgrid button img { width: 100%; height: 100%; display: block; }
+  .avgrid button.sel { border-color: #0d1b2a; }
+  .avbig { width: 84px; height: 84px; border-radius: 50%; border: 2px solid #0d1b2a; object-fit: cover; }
+  .topbar .btn { background: #fff; color: #0d1b2a; }
+  .topbar .btn:hover { background: #d8dde3; }
+  main { padding: 24px clamp(16px, 4vw, 48px); }
+  .panel { background: #fff; border: 2px solid #0d1b2a; border-radius: 12px; padding: 20px 22px; max-width: 1150px; margin-bottom: 20px; }
+  .panel h2 { margin: 0 0 12px; font-size: 22px; text-transform: uppercase; }
+  .custgrid { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,1fr) 260px; gap: 24px; align-items: start; }
+  .fieldlbl { font-weight: 700; text-transform: uppercase; font-size: 13px; margin-bottom: 6px; }
+  .addrbox { font-size: 16px; line-height: 1.7; white-space: pre-wrap; }
+  .logobox { border: 1.5px dashed #c3c8cf; border-radius: 8px; min-height: 130px; display: flex; align-items: center; justify-content: center; padding: 10px; background: #fafbfc; }
+  .logobox img { max-width: 100%; height: auto; object-fit: contain; display: block; }
+  .logobox.filled { border: 0; background: transparent; padding: 0; min-height: 0; }
+  .logoactions { display: flex; gap: 8px; margin-top: 8px; justify-content: flex-end; }
+  @media (max-width: 900px) { .custgrid { grid-template-columns: 1fr; } }
+  .kv { display: grid; grid-template-columns: 170px 1fr; gap: 8px 16px; font-size: 16px; }
+  .kv div:nth-child(odd) { font-weight: 700; text-transform: uppercase; font-size: 13px; padding-top: 3px; }
+  .empty { color: #777; font-size: 16px; }
+
+  /* ---------- MODAL ---------- */
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55); align-items: center; justify-content: center; padding: 20px; z-index: 50; }
+  .overlay.open { display: flex; }
+  .overlay.top { z-index: 60; }
+  .modal { background: #fff; border: 2px solid #0d1b2a; border-radius: 14px; width: 100%; max-width: 880px; max-height: 88vh; display: flex; flex-direction: column; }
+  .modal.narrow { max-width: 430px; }
+  .modal header { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 2px solid #0d1b2a; }
+  .modal header h3 { margin: 0; font-size: 21px; text-transform: uppercase; flex: 1; }
+  .x { background: none; border: none; font-size: 26px; line-height: 1; cursor: pointer; padding: 0 4px; }
+  .modal .body { padding: 16px 20px; overflow: auto; }
+  .modal footer { padding: 12px 20px; border-top: 1px solid #ddd; display: flex; gap: 10px; justify-content: flex-end; }
+
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; align-items: center; }
+  .toolbar input[type=search] { flex: 1; min-width: 200px; }
+  input[type=text], input[type=search], input[type=password], select { font-family: inherit; font-size: 15px; padding: 7px 10px; border: 1.5px solid #0d1b2a; background: #fff; outline: none; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #ddd; vertical-align: middle; }
+  th { background: #0d1b2a; color: #fff; text-transform: uppercase; font-size: 13px; letter-spacing: .4px; position: sticky; top: 0; }
+  tbody tr:hover { background: #f2f6fa; cursor: pointer; }
+  tbody tr.sel { background: #cfe0f0; }
+  .scroll { max-height: 46vh; overflow: auto; border: 1px solid #ddd; }
+  .row-actions { display: flex; gap: 6px; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+  .grid2 label { text-transform: none; font-size: 13px; }
+  .grid2 input, .grid2 select { width: 100%; }
+  .note { font-size: 13px; color: #666; margin-top: 8px; line-height: 1.6; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .tab { border: 1.5px solid #0d1b2a; background: #fff; font-family: inherit; font-size: 14px; font-weight: 700; padding: 6px 16px; cursor: pointer; text-transform: uppercase; }
+  .tab.active { background: #0d1b2a; color: #fff; }
+  .repwrap { display: flex; gap: 16px; align-items: flex-start; }
+  .repmain { flex: 1; min-width: 0; }
+  .tabs.vert { flex-direction: column; flex: 0 0 230px; gap: 6px; margin-bottom: 0; }
+  .tabs.vert .tab { width: 100%; text-align: left; padding: 9px 14px; }
+  @media (max-width: 800px) {
+    .repwrap { flex-direction: column; }
+    .tabs.vert { flex: none; width: 100%; flex-direction: row; flex-wrap: wrap; }
+    .tabs.vert .tab { width: auto; }
+  }
+  .code { font-family: 'Courier New', monospace; font-weight: 700; letter-spacing: 1px; }
+  #gateMsg { color: #b3261e; font-size: 14px; min-height: 20px; }
+  #gateName { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+  #gatePass { width: 100%; text-align: center; font-size: 20px; letter-spacing: 3px; padding: 10px; }
+
+  @media (max-width: 700px) {
+    #loginView { justify-content: center; padding: 20px; }
+    .card { padding: 22px 18px; }
+    .card input { max-width: 100%; }
+    .card .btn.lg { width: 100%; }
+    .kv { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div id="loginView">
+  <form class="card" id="loginForm" autocomplete="off">
+    <div class="brandmark">
+      <span class="badge">
+        <svg viewBox="0 0 64 64" aria-hidden="true"><g transform="rotate(-35 32 32)" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M39.78 11.22 A11 11 0 1 1 24.22 11.22" stroke-width="7.5"/><line x1="32" y1="30.5" x2="32" y2="52" stroke-width="8"/></g></svg>
+      </span>
+    </div>
+    <h1>Home Customer Report</h1>
+    <div class="field">
+      <label for="username">User Name</label>
+      <input id="username" type="text" placeholder="Email or Username" required>
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input id="password" type="password" placeholder="Password" required>
+    </div>
+    <div class="actions">
+      <button type="submit" class="btn lg">Login</button><br>
+      <a class="forgot" href="#" id="forgotLink">Forget your password?</a>
+      <div class="msg" id="loginMsg"></div>
+    </div>
+  </form>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="appView">
+  <div class="topbar">
+    <div class="brand"><svg viewBox="0 0 64 64" aria-hidden="true"><g transform="rotate(-35 32 32)" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M39.78 11.22 A11 11 0 1 1 24.22 11.22" stroke-width="7.5"/><line x1="32" y1="30.5" x2="32" y2="52" stroke-width="8"/></g></svg>Home Customer Report</div>
+    <span class="chip locked" id="custChip">ยังไม่ได้เลือก Customer</span>
+    <button class="btn sm" id="btnPickCust">เปลี่ยน Customer</button>
+    <div class="spacer"></div>
+    <button class="avatarbtn" id="btnProfile" title="โปรไฟล์ของฉัน"><img id="myAvatar" alt=""></button>
+    <span class="who" id="whoAmI"></span>
+    <button class="btn sm" id="btnManage">จัดการระบบ</button>
+    <button class="btn sm" id="btnLogout">ออกจากระบบ</button>
+  </div>
+  <main>
+    <div class="panel">
+      <h2 id="custTitle">ข้อมูลลูกค้า</h2>
+      <div id="custDetail" class="empty">กรุณาเลือก Customer และยืนยันรหัสเข้าถึง</div>
+    </div>
+    <div class="panel" id="reportPanel" style="display:none">
+      <h2>รายงาน (PDF)</h2>
+      <div class="repwrap">
+        <div class="tabs vert" id="siteTabs" style="display:none"></div>
+        <div class="repmain">
+          <div class="toolbar">
+            <input type="search" id="repSearch" placeholder="ค้นหารายงาน">
+            <button class="btn sm" id="btnAddPdf">+ เพิ่ม PDF</button>
+          </div>
+          <div class="scroll">
+            <table>
+              <thead><tr><th>ชื่อรายงาน</th><th class="siteCol">ไซต์</th><th>วันที่</th><th>ประเภท</th><th style="width:180px"></th></tr></thead>
+              <tbody id="repBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ========== MODAL: เลือก Customer ========== -->
+<div class="overlay" id="custOverlay">
+  <div class="modal">
+    <header>
+      <h3>เลือก Customer</h3>
+      <button class="x" data-close="custOverlay">&times;</button>
+    </header>
+    <div class="body">
+      <div class="toolbar"><input type="search" id="custSearch" placeholder="พิมพ์ชื่อบริษัทของท่านเพื่อค้นหา"></div>
+      <div class="scroll" id="custScroll">
+        <table>
+          <thead><tr><th>ชื่อลูกค้า</th><th class="admOnly">ผู้ติดต่อ</th><th class="admOnly">จำนวนรายงาน</th></tr></thead>
+          <tbody id="custPickBody"></tbody>
+        </table>
+      </div>
+      <div class="note" id="custCount"></div>
+    </div>
+    <footer>
+      <button class="btn ghost" data-close="custOverlay">ยกเลิก</button>
+      <button class="btn" id="btnConfirmCust">ถัดไป</button>
+    </footer>
+  </div>
+</div>
+
+<!-- ========== MODAL: ยืนยันรหัสเข้าถึง ========== -->
+<div class="overlay top" id="gateOverlay">
+  <div class="modal narrow">
+    <header>
+      <h3>ยืนยันรหัสเข้าถึง</h3>
+      <button class="x" data-close="gateOverlay">&times;</button>
+    </header>
+    <form class="body" id="gateForm">
+      <div id="gateName"></div>
+      <label for="gatePass">รหัสเข้าถึงของลูกค้า</label>
+      <input type="password" id="gatePass" placeholder="••••••" autocomplete="off">
+      <div id="gateMsg"></div>
+      <div class="note">รหัสนี้ออกให้เฉพาะลูกค้าแต่ละราย เพื่อป้องกันการเข้าถึงรายงานข้ามบริษัท</div>
+    </form>
+    <footer>
+      <button class="btn ghost" data-close="gateOverlay">ยกเลิก</button>
+      <button class="btn ghost" id="btnAdminBypass" style="display:none">ข้ามด้วยสิทธิ์ Admin</button>
+      <button class="btn" id="btnGateOk">ยืนยัน</button>
+    </footer>
+  </div>
+</div>
+
+<!-- ========== MODAL: อ่าน PDF ========== -->
+<div class="overlay top" id="viewOverlay">
+  <div class="modal" style="max-width:1100px;height:92vh;max-height:92vh">
+    <header>
+      <h3 id="viewTitle">อ่านรายงาน</h3>
+      <a class="btn sm ghost" id="viewOpenTab" href="#" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:none">เปิดแท็บใหม่</a>
+      <a class="btn sm" id="viewDl" href="#" download style="text-decoration:none">ดาวน์โหลด</a>
+      <button class="x" data-close="viewOverlay">&times;</button>
+    </header>
+    <div class="body" style="padding:0;flex:1;display:flex;flex-direction:column">
+      <div id="viewHint" class="note" style="display:none;padding:8px 20px;margin:0;background:#fff8e1">
+        ต้นทางไม่อนุญาตให้ดึงไฟล์มาแสดงโดยตรง จึงแสดงผ่านหน้าตัวอย่างของผู้ให้บริการแทน — ถ้ายังไม่ขึ้น ให้กด <b>เปิดแท็บใหม่</b>
+      </div>
+      <div id="viewLoading" style="display:none;padding:24px 20px;font-size:16px">กำลังโหลดไฟล์...</div>
+      <iframe id="viewFrame" style="width:100%;flex:1;border:0" title="PDF"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL: เพิ่ม PDF (หน้าลูกค้า) ========== -->
+<div class="overlay top" id="addPdfOverlay">
+  <div class="modal narrow">
+    <header>
+      <h3>เพิ่มรายงาน PDF</h3>
+      <button class="x" data-close="addPdfOverlay">&times;</button>
+    </header>
+    <form class="body" id="addPdfForm">
+      <div id="addPdfFor" style="font-weight:700;margin-bottom:10px"></div>
+      <div class="grid2">
+        <div style="grid-column:1/-1" id="pSiteWrap"><label>ไซต์ / สาขา</label><select id="pSite"></select></div>
+        <div style="grid-column:1/-1"><label>ชื่อรายงาน</label><input type="text" id="pTitle"></div>
+        <div><label>วันที่</label><input type="text" id="pDate" placeholder="YYYY-MM-DD"></div>
+        <div><label>ประเภทงาน</label><input type="text" id="pType" placeholder="Service / Project / PM"></div>
+        <div style="grid-column:1/-1"><label>เลือกไฟล์ PDF จากเครื่อง</label><input type="file" id="pFile" accept="application/pdf"></div>
+        <div style="grid-column:1/-1"><label>หรือวางลิงก์ไฟล์ / path (รองรับลิงก์ OneDrive)</label><input type="text" id="pUrl" placeholder="reports/xxx.pdf หรือ https://..."></div>
+      </div>
+      <div class="note">ไฟล์ที่อัปโหลดจะถูกเก็บไว้ในเบราว์เซอร์เครื่องนี้ (แนะนำไม่เกิน 2 MB ต่อไฟล์) ถ้าไฟล์ใหญ่ให้ใช้วิธีวางลิงก์แทน</div>
+      <div class="msg" id="pdfMsg" style="text-align:left"></div>
+    </form>
+    <footer>
+      <button class="btn ghost" data-close="addPdfOverlay">ยกเลิก</button>
+      <button class="btn" id="btnSavePdf">บันทึก</button>
+    </footer>
+  </div>
+</div>
+
+<!-- ========== MODAL: ตั้งค่าโลโก้ลูกค้า ========== -->
+<div class="overlay top" id="logoOverlay">
+  <div class="modal" style="max-width:560px">
+    <header>
+      <h3>ตั้งค่าโลโก้ลูกค้า</h3>
+      <button class="x" data-close="logoOverlay">&times;</button>
+    </header>
+    <div class="body">
+      <div id="logoFor" style="font-weight:700;margin-bottom:10px"></div>
+      <label for="logoUrl">ลิงก์รูปภาพ (URL)</label>
+      <input type="text" id="logoUrl" style="width:100%" placeholder="https://example.com/logo.png หรือ assets/logo-3m.png">
+      <div class="note">ใช้ลิงก์รูปตรง (ลงท้าย .png .jpg .svg .webp) หรือ path ของไฟล์ในเว็บนี้ก็ได้</div>
+
+      <div style="margin-top:14px">
+        <label for="logoSize">ขนาดความกว้าง: <span id="logoSizeOut">160</span> px</label>
+        <input type="range" id="logoSize" min="60" max="240" step="4" value="160" style="width:100%">
+      </div>
+
+      <div class="fieldlbl" style="margin-top:12px">ตัวอย่าง</div>
+      <div class="logobox" style="min-height:150px">
+        <img id="logoPreview" alt="" style="display:none">
+        <span id="logoEmpty" style="color:#999;font-size:14px">ยังไม่มีรูป</span>
+      </div>
+      <div class="msg" id="logoMsg" style="text-align:left"></div>
+    </div>
+    <footer>
+      <button class="btn sm danger" id="btnLogoRemove">ลบโลโก้</button>
+      <div style="flex:1"></div>
+      <button class="btn ghost" data-close="logoOverlay">ยกเลิก</button>
+      <button class="btn" id="btnLogoSave">บันทึก</button>
+    </footer>
+  </div>
+</div>
+
+<!-- ========== MODAL: โปรไฟล์ / รูปประจำตัว ========== -->
+<div class="overlay top" id="profileOverlay">
+  <div class="modal" style="max-width:560px">
+    <header>
+      <h3 id="profileTitle">โปรไฟล์ของฉัน</h3>
+      <button class="x" data-close="profileOverlay">&times;</button>
+    </header>
+    <div class="body">
+      <div style="display:flex;gap:16px;align-items:center;margin-bottom:14px">
+        <img id="profPreview" class="avbig" alt="">
+        <div style="flex:1">
+          <label>ชื่อที่แสดง</label>
+          <input type="text" id="profName" style="width:100%">
+          <div class="note" id="profNameNote" style="display:none">เฉพาะ Admin และ Editor เท่านั้นที่แก้ชื่อได้</div>
+        </div>
+      </div>
+      <label>เลือกรูปประจำตัว (20 แบบ)</label>
+      <div class="avgrid" id="avGrid"></div>
+      <div class="toolbar" style="margin-top:12px">
+        <label class="btn sm ghost" style="cursor:pointer;display:inline-block">อัปโหลดรูปเอง<input type="file" id="profFile" accept="image/*" hidden></label>
+        <span class="note" style="margin:0">ไฟล์รูปจะถูกย่อเหลือ 128px อัตโนมัติ</span>
+      </div>
+    </div>
+    <footer>
+      <button class="btn ghost" data-close="profileOverlay">ยกเลิก</button>
+      <button class="btn" id="btnSaveProfile">บันทึก</button>
+    </footer>
+  </div>
+</div>
+
+<!-- ========== MODAL: จัดการระบบ ========== -->
+<div class="overlay" id="mgmtOverlay">
+  <div class="modal">
+    <header>
+      <h3>จัดการระบบ</h3>
+      <button class="x" data-close="mgmtOverlay">&times;</button>
+    </header>
+    <div class="body">
+      <div class="tabs">
+        <button class="tab active" data-tab="users">ผู้ใช้งาน</button>
+        <button class="tab" data-tab="customers">ลูกค้า &amp; รหัสเข้าถึง</button>
+        <button class="tab" data-tab="reports">รายงาน PDF</button>
+        <button class="tab" data-tab="history">ประวัติการใช้งาน</button>
+      </div>
+
+      <!-- USERS -->
+      <section id="tab-users">
+        <div id="userFormBox">
+        <div class="grid2">
+          <div><label>Username</label><input type="text" id="uUser"></div>
+          <div><label>ชื่อ-สกุล</label><input type="text" id="uName"></div>
+          <div><label>Password</label><input type="text" id="uPass"></div>
+          <div><label>สิทธิ์</label><select id="uRole"><option value="user">User</option><option value="editor">Editor</option><option value="admin">Admin</option></select></div>
+          <div><label>ขอบเขตลูกค้า</label><select id="uScope"><option value="all">ดูได้ทุกลูกค้า</option><option value="selected">เฉพาะที่เลือก</option></select></div>
+        </div>
+        <div id="uAllowedWrap" style="display:none;margin-top:10px">
+          <label>เลือกลูกค้าที่ผู้ใช้รายนี้เข้าถึงได้</label>
+          <div class="toolbar">
+            <input type="search" id="uAllowedSearch" placeholder="ค้นหาชื่อลูกค้า">
+            <button class="btn sm ghost" id="uAllowedAll" type="button">เลือกทั้งหมด</button>
+            <button class="btn sm ghost" id="uAllowedNone" type="button">ล้างทั้งหมด</button>
+          </div>
+          <div class="scroll" id="uAllowedList" style="max-height:170px;padding:6px 10px"></div>
+        </div>
+        <div class="toolbar" style="margin-top:10px">
+          <button class="btn sm" id="btnSaveUser">บันทึกผู้ใช้</button>
+          <button class="btn sm ghost" id="btnClearUser">ล้างฟอร์ม</button>
+        </div>
+        </div>
+        <div class="scroll">
+          <table>
+            <thead><tr><th style="width:48px">รูป</th><th>Username</th><th>ชื่อ-สกุล</th><th>สิทธิ์</th><th class="admCol">Password</th><th class="admCol">ลูกค้าที่เข้าถึงได้</th><th></th></tr></thead>
+            <tbody id="userBody"></tbody>
+          </table>
+        </div>
+        <div class="note">* ข้อมูลเก็บในเบราว์เซอร์เครื่องนี้ (localStorage) เหมาะกับการใช้งานภายใน ไม่ใช่ระบบความปลอดภัยระดับ production</div>
+      </section>
+
+      <!-- CUSTOMERS -->
+      <section id="tab-customers" style="display:none">
+        <div class="grid2">
+          <div><label>ชื่อลูกค้า</label><input type="text" id="cName"></div>
+          <div><label>รหัสเข้าถึง</label><input type="text" id="cPass"></div>
+          <div><label>ผู้ติดต่อ</label><input type="text" id="cContact"></div>
+          <div><label>อีเมล</label><input type="text" id="cEmail"></div>
+          <div><label>เบอร์โทร</label><input type="text" id="cPhone"></div>
+          <div><label>หมายเหตุ</label><input type="text" id="cNote"></div>
+          <div style="grid-column:1/-1"><label>ที่อยู่</label><input type="text" id="cAddress" placeholder="เลขที่ ถนน แขวง/ตำบล เขต/อำเภอ จังหวัด รหัสไปรษณีย์"></div>
+        </div>
+        <div class="toolbar" style="margin-top:10px">
+          <button class="btn sm" id="btnSaveCust">บันทึกลูกค้า</button>
+          <button class="btn sm ghost" id="btnClearCust">ล้างฟอร์ม</button>
+          <button class="btn sm ghost" id="btnExportCodes">ส่งออกรายชื่อ+รหัส (CSV)</button>
+        </div>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>ชื่อลูกค้า</th><th>รหัสเข้าถึง</th><th>ผู้ติดต่อ</th><th>รายงาน</th><th></th></tr></thead>
+            <tbody id="custMgmtBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- REPORTS -->
+      <section id="tab-reports" style="display:none">
+        <div class="grid2">
+          <div><label>ลูกค้า</label><select id="rCust"></select></div>
+          <div id="rSiteWrap"><label>ไซต์ / สาขา</label><select id="rSite"></select></div>
+          <div><label>ชื่อรายงาน</label><input type="text" id="rTitle"></div>
+          <div><label>วันที่</label><input type="text" id="rDate" placeholder="YYYY-MM-DD"></div>
+          <div><label>ประเภทงาน</label><input type="text" id="rType" placeholder="Service / Project / PM"></div>
+          <div style="grid-column:1/-1"><label>ลิงก์ไฟล์ PDF (วางลิงก์ OneDrive / SharePoint ได้เลย)</label><input type="text" id="rUrl" placeholder="reports/3M Thailand/Report_2026-08.pdf หรือ https://..."></div>
+          <div style="grid-column:1/-1"><label>ลิงก์สำหรับเปิดอ่าน (ไม่บังคับ — จาก OneDrive กด Embed แล้ววาง src)</label><input type="text" id="rEmbed" placeholder="https://onedrive.live.com/embed?... (เว้นว่างได้)"></div>
+        </div>
+        <div class="toolbar" style="margin-top:10px">
+          <button class="btn sm" id="btnSaveRep">บันทึกรายงาน</button>
+          <button class="btn sm ghost" id="btnClearRep">ล้างฟอร์ม</button>
+          <label class="btn sm ghost" style="cursor:pointer;display:inline-block">นำเข้า CSV/JSON<input type="file" id="importRep" accept=".csv,.json" hidden></label>
+          <button class="btn sm ghost" id="btnExportManifest">ส่งออก reports.json</button>
+          <button class="btn sm" id="btnExportSeed">ส่งออก data.json (สำหรับขึ้นเว็บ)</button>
+          <button class="btn sm ghost" id="btnExportAll">สำรองข้อมูลทั้งหมด (JSON)</button>
+          <label class="btn sm ghost" style="cursor:pointer;display:inline-block">กู้คืนข้อมูล<input type="file" id="restoreFile" accept=".json" hidden></label>
+        </div>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>ลูกค้า</th><th>ชื่อรายงาน</th><th>วันที่</th><th>ลิงก์</th><th></th></tr></thead>
+            <tbody id="repMgmtBody"></tbody>
+          </table>
+        </div>
+        <div class="note">
+          <b>ใช้ไฟล์ในโฟลเดอร์:</b> วาง PDF ไว้ที่ <b>reports/&lt;ชื่อลูกค้า&gt;/</b> ข้างไฟล์นี้ แล้วใส่ path แบบสัมพัทธ์<br>
+          <b>ใช้ลิงก์ OneDrive:</b> ที่ OneDrive กด Share → Copy link (ตั้งเป็น "ทุกคนที่มีลิงก์") แล้ววางในช่องลิงก์ ระบบจะแปลงเป็นลิงก์ดาวน์โหลดตรงให้เอง ถ้าหน้าต่างอ่านไม่แสดงผล ให้กลับไปที่ OneDrive → Embed → คัดลอกค่า src มาวางในช่อง "ลิงก์สำหรับเปิดอ่าน"<br>
+          นำเข้า CSV รองรับหัวคอลัมน์: customer, title, date, type, url<br>
+          <b style="color:#b3261e">ขึ้นเว็บครั้งแรก / แก้รหัสแล้ว:</b> ต้องกด "ส่งออก data.json" แล้วอัปโหลดไฟล์นั้นขึ้นเว็บด้วย มิฉะนั้นเว็บจะใช้รหัสเริ่มต้น (Admin / admin@1234) เพราะรหัสที่แก้ในเครื่องเก็บอยู่ในเบราว์เซอร์เท่านั้น
+        </div>
+      </section>
+      <!-- HISTORY -->
+      <section id="tab-history" style="display:none">
+        <div class="toolbar">
+          <input type="search" id="hSearch" placeholder="ค้นหา ผู้ใช้ / ลูกค้า / เหตุการณ์">
+          <select id="hType">
+            <option value="">ทุกเหตุการณ์</option>
+            <option value="login">เข้าสู่ระบบ</option>
+            <option value="login-fail">เข้าสู่ระบบไม่สำเร็จ</option>
+            <option value="logout">ออกจากระบบ</option>
+            <option value="customer">เปิดข้อมูลลูกค้า</option>
+            <option value="gate-fail">รหัสลูกค้าผิด</option>
+            <option value="file">ไฟล์รายงาน</option>
+          </select>
+          <button class="btn sm ghost" id="btnExportLog">ส่งออก CSV</button>
+          <button class="btn sm danger" id="btnClearLog">ล้างประวัติ</button>
+        </div>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>เวลา</th><th>ผู้ใช้</th><th>สิทธิ์</th><th>เหตุการณ์</th><th>รายละเอียด</th></tr></thead>
+            <tbody id="hBody"></tbody>
+          </table>
+        </div>
+        <div class="note" id="hCount">เก็บย้อนหลัง 3 เดือน ข้อมูลเก่ากว่านั้นจะถูกลบอัตโนมัติ</div>
+      </section>
+    </div>
+    <footer><button class="btn ghost" data-close="mgmtOverlay">ปิด</button></footer>
+  </div>
+</div>
+
+<script>
+/* ================= DATA ================= */
+var LS_USERS = 'hcr_users', LS_CUST = 'hcr_customers_v2', LS_LOG = 'hcr_log';
+
+/* ============ รูปประจำตัวสำเร็จรูป 20 แบบ ============ */
+var AV_COLORS = ['#0d1b2a', '#1d4ed8', '#0f766e', '#b45309', '#9d174d', '#4338ca', '#166534', '#b91c1c', '#0369a1', '#6d28d9'];
+var AV_GLYPH = [
+  '<circle cx="32" cy="25" r="10"/><path d="M12 56c0-11 9-18 20-18s20 7 20 18z"/>',
+  '<g transform="rotate(-35 32 32)"><path d="M39.78 15.22 A9.5 9.5 0 1 1 24.22 15.22" fill="none" stroke="#fff" stroke-width="6.5" stroke-linecap="round"/><line x1="32" y1="31" x2="32" y2="50" stroke="#fff" stroke-width="7" stroke-linecap="round"/></g>'
+];
+function avatarUrl(i) {
+  i = (typeof i === 'number' && i >= 0) ? i % 20 : 0;
+  var c = AV_COLORS[i % 10], g = AV_GLYPH[i < 10 ? 0 : 1];
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">' +
+    '<rect width="64" height="64" fill="' + c + '"/><g fill="#fff">' + g + '</g></svg>';
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+function userAvatar(u) {
+  if (!u) return avatarUrl(0);
+  if (u.photo) return u.photo;
+  return avatarUrl(typeof u.avatar === 'number' ? u.avatar : 0);
+}
+
+/* ============ บันทึกประวัติการใช้งาน (เก็บ 3 เดือน) ============ */
+var LOG_DAYS = 92;
+function logEvent(type, detail) {
+  try {
+    var log = load(LS_LOG, []) || [];
+    log.push({
+      t: Date.now(), type: type,
+      user: (currentUser && currentUser.username) || '-',
+      name: (currentUser && currentUser.name) || '-',
+      role: (currentUser && currentUser.role) || '-',
+      detail: detail || ''
+    });
+    var cut = Date.now() - LOG_DAYS * 86400000;
+    log = log.filter(function (e) { return e.t >= cut; });
+    if (log.length > 8000) log = log.slice(-8000);
+    save(LS_LOG, log);
+  } catch (e) { }
+}
+
+var DEFAULT_USERS = [
+  { username: 'Admin', password: 'admin@1234', name: 'ผู้ดูแลระบบ', role: 'admin', avatar: 0, scope: 'all', allowed: [] },
+  { username: 'User', password: '@12345', name: 'ผู้ใช้งาน', role: 'user', avatar: 2, scope: 'all', allowed: [] }
+];
+
+/* รายชื่อลูกค้าดึงมาจาก Online Form Report */
+var CUSTOMER_NAMES = ["CBRE-3M","After you","AIT","AJINIMOTO","AMARI DMK","ASI","BIGL Plant 1","BIGL Plant 2","BIGL Plant 3","BKK CITY","Colgate Palmolive","DAIZO","GPF","GPO","INC2","Indo Thai","KMUTT","KNAUF SIAM GYPSUM","LION","Mercury Ville","MEUYUME","MIRACLE BIO","NSTDA - BIOTEC","NSTDA - CO","NSTDA - MTEC","NSTDA - NECTEC","NSTDA - Yothi","NSTDA - บ้านวิทยาศาสตร์สิรินธร","NXP","PEPSI","PTT Data Center","PTT GC","PTT Innovation","SHARP","SIG Combibloc","Singapore Power (SP)","SONY","Standard CAN","Stanley Lamp 5","Stanley Lamp 7 / 7.5","Suntory Pepsico","Supalai Grand Tower","SYNNEX","Thai PBS","THAIYO","TPV Technology","UniSUN","โรงพยาบาล BNH"];
+
+/* ลูกค้าที่มีหลายไซต์ในสัญญาเดียว — ล็อกอินครั้งเดียวเห็นไฟล์แยกตามไซต์ */
+var GROUPS = [
+  { name: 'CBRE-3M', sites: ['3M Innovation', '3M Thailand'] },
+  { name: 'Colgate Palmolive', sites: ['Colgate GDC', 'Colgate ILP', 'Colgate RPL', 'Colgate RSP'] }
+];
+function groupOf(name) {
+  return GROUPS.find(function (g) { return g.name.toLowerCase() === String(name || '').toLowerCase(); }) || null;
+}
+function sitesOf(cust) { var g = cust && groupOf(cust.name); return (cust && cust.sites) || (g && g.sites) || null; }
+
+/* รหัสเข้าถึงเริ่มต้น: คำนวณจากชื่อลูกค้าแบบคงที่ (ไม่สุ่ม) ทุกเครื่องได้ค่าเดียวกัน แก้ทีหลังได้ */
+function genCode(seed) {
+  var s = String(seed || ''), h = 5381;
+  for (var i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+  return String(100000 + (h % 900000));
+}
+function load(k, f) { try { var v = JSON.parse(localStorage.getItem(k)); return v || f; } catch (e) { return f; } }
+function save(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+
+var users = load(LS_USERS, null);
+if (!users || !users.length) { users = DEFAULT_USERS.slice(); save(LS_USERS, users); }
+DEFAULT_USERS.forEach(function (d) {
+  if (!users.some(function (u) { return u.username.toLowerCase() === d.username.toLowerCase(); })) users.push(d);
+});
+users.forEach(function (u, i) { if (typeof u.avatar !== 'number' && !u.photo) u.avatar = i % 20; });
+save(LS_USERS, users);
+
+var customers = load(LS_CUST, null);
+if (!customers || !customers.length) {
+  customers = CUSTOMER_NAMES.map(function (n) {
+    var g = groupOf(n);
+    return { name: n, pass: genCode(n), contact: '', email: '', phone: '', address: '', note: '', logo: '', sites: g ? g.sites.slice() : null, reports: [] };
+  });
+  save(LS_CUST, customers);
+} else {
+  /* รวมลูกค้าเดิมที่แยกไซต์ ให้อยู่ภายใต้ชื่อกลุ่มเดียว */
+  var changed = false;
+  GROUPS.forEach(function (g) {
+    var members = customers.filter(function (c) { return g.sites.some(function (s) { return s.toLowerCase() === c.name.toLowerCase(); }); });
+    var grp = customers.find(function (c) { return c.name.toLowerCase() === g.name.toLowerCase(); });
+    if (!members.length && grp) { if (!grp.sites) { grp.sites = g.sites.slice(); changed = true; } return; }
+    if (!grp) {
+      grp = { name: g.name, pass: (members[0] && members[0].pass) || genCode(g.name), contact: '', email: '', phone: '', address: '', note: '', logo: '', sites: g.sites.slice(), reports: [] };
+      customers.push(grp);
+    }
+    grp.sites = g.sites.slice();
+    members.forEach(function (m) {
+      (m.reports || []).forEach(function (r) { r.site = r.site || m.name; grp.reports.push(r); });
+      if (!grp.contact && m.contact) { grp.contact = m.contact; grp.email = grp.email || m.email; grp.phone = grp.phone || m.phone; }
+      customers.splice(customers.indexOf(m), 1);
+    });
+    changed = true;
+  });
+  if (changed) save(LS_CUST, customers);
+}
+
+var currentUser = null, activeCust = null, pendingPick = null, gateTries = 0;
+var editUserIdx = -1, editCustIdx = -1, editRep = null;
+
+/* ============ โหลดไฟล์ตั้งค่า data.json (ผู้ใช้ + ลูกค้า + รหัส) ============
+   localStorage แยกกันคนละเครื่อง/คนละโดเมน สิ่งที่แก้ในเครื่องจึงไม่ตามขึ้นเว็บ
+   ให้ Admin กด "ส่งออก data.json" แล้วอัปโหลดไฟล์ขึ้นเว็บคู่กับ index.html  */
+var LS_SEED = 'hcr_seed_version';
+function loadSeed() {
+  return fetch('data.json?t=' + Date.now())
+    .then(function (r) { if (!r.ok) throw new Error('no seed'); return r.json(); })
+    .then(function (d) {
+      if (!d || !d.version) return;
+      if (String(d.version) === localStorage.getItem(LS_SEED)) return;   /* ใช้ชุดนี้ไปแล้ว */
+      if (d.users && d.users.length) { users = d.users; save(LS_USERS, users); }
+      if (d.customers && d.customers.length) { customers = d.customers; save(LS_CUST, customers); }
+      localStorage.setItem(LS_SEED, String(d.version));
+      renderUsers(); renderCustMgmt(); renderRepMgmt(); fillCustSelect();
+    })
+    .catch(function () { /* ไม่มี data.json ก็ใช้ข้อมูลในเครื่อง */ });
+}
+
+/* ============ โหลดรายการรายงานจาก reports.json (โฟลเดอร์ reports/) ============ */
+function normName(s) { return String(s || '').toLowerCase().replace(/[^0-9a-z฀-๿]+/g, ''); }
+function loadManifest() {
+  return fetch('reports.json?t=' + Date.now())
+    .then(function (r) { if (!r.ok) throw new Error('no manifest'); return r.json(); })
+    .then(function (m) {
+      var map = m.customers || m;
+      Object.keys(map).forEach(function (key) {
+        var list = map[key] || [];
+        var c = customers.find(function (x) { return normName(x.name) === normName(key); });
+        if (!c) { c = { name: key, pass: genCode(key), contact: '', email: '', phone: '', address: '', note: '', logo: '', reports: [] }; customers.push(c); }
+        var local = (c.reports || []).filter(function (r) { return r.source !== 'manifest'; });
+        c.reports = list.map(function (r) {
+          return { title: r.title || '', date: r.date || '', type: r.type || '', site: r.site || '', url: r.url || r.file || '', filename: r.filename || '', source: 'manifest' };
+        }).concat(local);
+        var g = groupOf(c.name); if (g && !c.sites) c.sites = g.sites.slice();
+      });
+      save(LS_CUST, customers);
+      renderCustMgmt(); renderRepMgmt(); fillCustSelect(); renderPick();
+      if (activeCust) renderReports();
+    })
+    .catch(function () { /* ไม่มีไฟล์ manifest ก็ใช้ข้อมูลในเครื่องตามปกติ */ });
+}
+loadSeed().then(loadManifest).then(restoreSession);
+
+/* ================= HELPERS ================= */
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
+/* เปรียบเทียบแบบตรงตัวอักษร (case-sensitive) ทีละอักขระ */
+function strictEq(a, b) {
+  a = String(a == null ? '' : a); b = String(b == null ? '' : b);
+  if (a.length !== b.length) return false;
+  for (var i = 0; i < a.length; i++) if (a.charCodeAt(i) !== b.charCodeAt(i)) return false;
+  return true;
+}
+/* Admin และ Editor = สิทธิ์จัดการ (Editor ต่างตรงที่ดูประวัติการใช้งานไม่ได้) */
+function isMgr() { return !!(currentUser && (currentUser.role === 'admin' || currentUser.role === 'editor')); }
+/* ผู้ใช้รายนี้เข้าถึงลูกค้ารายนี้ได้หรือไม่ */
+function canAccess(cust) {
+  if (!currentUser || !cust) return false;
+  if (isMgr() || currentUser.scope !== 'selected') return true;
+  return (currentUser.allowed || []).some(function (n) { return n.toLowerCase() === cust.name.toLowerCase(); });
+}
+function openM(id) { $(id).classList.add('open'); }
+function closeM(id) { $(id).classList.remove('open'); }
+document.addEventListener('click', function (e) {
+  var t = e.target.getAttribute && e.target.getAttribute('data-close');
+  if (t) closeM(t);
+});
+
+/* ================= LOGIN ================= */
+$('loginForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var u = $('username').value.trim(), p = $('password').value;
+  /* Username ไม่สนตัวพิมพ์ / Password ตรวจตัวพิมพ์ใหญ่-เล็กแบบตรงตัวทุกอักขระ */
+  var acct = users.find(function (x) { return x.username.toLowerCase() === u.toLowerCase(); });
+  var found = (acct && strictEq(acct.password, p)) ? acct : null;
+  if (!found) {
+    $('loginMsg').textContent = (acct && p && acct.password.toLowerCase() === p.toLowerCase())
+      ? 'รหัสผ่านไม่ตรง — ตรวจสอบตัวพิมพ์ใหญ่/เล็ก (Caps Lock)'
+      : 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
+    logEvent('login-fail', 'พยายามเข้าสู่ระบบด้วยชื่อ "' + u + '"');
+    return;
+  }
+  $('loginMsg').textContent = '';
+  enterApp(found, false);
+});
+
+function enterApp(found, silent) {
+  currentUser = found;
+  $('loginView').style.display = 'none';
+  $('appView').style.display = 'flex';
+  $('whoAmI').textContent = found.name + ' (' + found.role + ')';
+  $('myAvatar').src = userAvatar(found);
+  $('btnManage').style.display = (found.role === 'admin' || found.role === 'editor') ? '' : 'none';
+  $('btnManage').textContent = 'จัดการระบบ';
+  if (!silent) logEvent('login', 'เข้าสู่ระบบสำเร็จ');
+  renderUsers(); renderCustMgmt(); renderRepMgmt(); fillCustSelect();
+  saveSession();
+  if (!silent) openCustomerPicker();
+}
+
+/* ============ จำสถานะไว้ตอนรีเฟรช (หมดอายุใน 8 ชั่วโมง หรือปิดแท็บ) ============ */
+var SS_KEY = 'hcr_session', SESSION_HOURS = 8;
+function saveSession() {
+  try {
+    sessionStorage.setItem(SS_KEY, JSON.stringify({
+      u: currentUser ? currentUser.username : '',
+      c: activeCust ? activeCust.name : '',
+      s: activeSite || '',
+      by: !!sessionByMgr,
+      t: Date.now()
+    }));
+  } catch (e) { }
+}
+function clearSession() { try { sessionStorage.removeItem(SS_KEY); } catch (e) { } }
+function restoreSession() {
+  var d;
+  try { d = JSON.parse(sessionStorage.getItem(SS_KEY) || 'null'); } catch (e) { d = null; }
+  if (!d || !d.u) return;
+  if (Date.now() - (d.t || 0) > SESSION_HOURS * 3600000) { clearSession(); return; }
+  var u = users.find(function (x) { return x.username.toLowerCase() === String(d.u).toLowerCase(); });
+  if (!u) { clearSession(); return; }
+  enterApp(u, true);
+  if (d.c) {
+    var c = customers.find(function (x) { return x.name.toLowerCase() === String(d.c).toLowerCase(); });
+    if (c && canAccess(c)) { activeSite = d.s || ''; grantAccess(c, !!d.by, true); return; }
+  }
+  openCustomerPicker();
+}
+
+$('forgotLink').addEventListener('click', function (e) { e.preventDefault(); alert('กรุณาติดต่อผู้ดูแลระบบ (Admin) เพื่อรีเซ็ตรหัสผ่าน'); });
+
+$('btnLogout').addEventListener('click', function () {
+  logEvent('logout', 'ออกจากระบบ');
+  clearSession();
+  currentUser = null; activeCust = null; activeSite = ''; $('password').value = '';
+  $('appView').style.display = 'none'; $('loginView').style.display = 'flex';
+  resetCustomerPanel();
+});
+function resetCustomerPanel() {
+  var chip = $('custChip'); chip.textContent = 'ยังไม่ได้เลือก Customer'; chip.classList.add('locked');
+  $('custTitle').textContent = 'ข้อมูลลูกค้า';
+  $('custDetail').className = 'empty'; $('custDetail').textContent = 'กรุณาเลือก Customer และยืนยันรหัสเข้าถึง';
+  $('reportPanel').style.display = 'none';
+}
+
+/* ================= PICK CUSTOMER ================= */
+$('btnPickCust').addEventListener('click', openCustomerPicker);
+function openCustomerPicker() { pendingPick = null; $('custSearch').value = ''; renderPick(); openM('custOverlay'); setTimeout(function(){ $('custSearch').focus(); }, 50); }
+$('custSearch').addEventListener('input', renderPick);
+
+function renderPick() {
+  var isAdmin = isMgr();
+  var q = $('custSearch').value.trim().toLowerCase();
+  var tb = $('custPickBody');
+
+  /* ผู้ใช้ทั่วไปเห็นเฉพาะคอลัมน์ชื่อ และต้องค้นหาก่อนจึงจะแสดงรายชื่อ */
+  Array.prototype.forEach.call(document.querySelectorAll('#custOverlay .admOnly'), function (el) {
+    el.style.display = isAdmin ? '' : 'none';
+  });
+
+  var scoped = !isAdmin && currentUser && currentUser.scope === 'selected';
+  if (!isAdmin && !scoped && q.length < 2) {
+    pendingPick = null;
+    $('custScroll').style.display = 'none';
+    $('custCount').textContent = 'พิมพ์ชื่อบริษัทของท่านอย่างน้อย 2 ตัวอักษร แล้วเลือกจากผลการค้นหา';
+    return;
+  }
+  $('custScroll').style.display = '';
+
+  var rows = customers.map(function (c, i) { return { c: c, i: i }; })
+    .filter(function (o) { return canAccess(o.c); })
+    .filter(function (o) {
+      if (!q) return true;
+      return o.c.name.toLowerCase().indexOf(q) > -1 || (isAdmin && (o.c.contact || '').toLowerCase().indexOf(q) > -1);
+    });
+  if (!isAdmin && !scoped) rows = rows.slice(0, 10);
+
+  tb.innerHTML = rows.map(function (o) {
+    return '<tr data-i="' + o.i + '"><td>' + esc(o.c.name) + '</td>' +
+      (isAdmin ? '<td>' + esc(o.c.contact) + '</td><td>' + (o.c.reports ? o.c.reports.length : 0) + '</td>' : '') + '</tr>';
+  }).join('') || '<tr><td colspan="3" style="color:#777">ไม่พบรายชื่อที่ตรงกับคำค้นหา</td></tr>';
+
+  $('custCount').textContent = isAdmin
+    ? 'พบ ' + rows.length + ' รายการ จากทั้งหมด ' + customers.length
+    : (scoped ? 'ลูกค้าที่บัญชีนี้เข้าถึงได้ ' + rows.length + ' รายการ — เลือกเพื่อกรอกรหัสเข้าถึง'
+              : 'พบ ' + rows.length + ' รายการ — เลือกบริษัทของท่านเพื่อกรอกรหัสเข้าถึง');
+}
+$('custPickBody').addEventListener('click', function (e) {
+  var tr = e.target.closest('tr'); if (!tr || !tr.dataset.i) return;
+  Array.prototype.forEach.call(this.querySelectorAll('tr'), function (r) { r.classList.remove('sel'); });
+  tr.classList.add('sel'); pendingPick = customers[+tr.dataset.i];
+  if (!isMgr()) askGate();   /* ผู้ใช้ทั่วไป: กดเลือกแล้วเด้งหน้าใส่รหัสทันที */
+});
+$('custPickBody').addEventListener('dblclick', function () { if (pendingPick) askGate(); });
+$('btnConfirmCust').addEventListener('click', function () {
+  if (!pendingPick) { alert('กรุณาเลือกลูกค้า 1 รายการ'); return; }
+  askGate();
+});
+
+/* ================= ACCESS GATE ================= */
+function askGate() {
+  gateTries = 0;
+  $('gateName').textContent = pendingPick.name;
+  $('gatePass').value = ''; $('gateMsg').textContent = '';
+  $('btnAdminBypass').style.display = isMgr() ? '' : 'none';
+  openM('gateOverlay');
+  setTimeout(function () { $('gatePass').focus(); }, 60);
+}
+$('gateForm').addEventListener('submit', function (e) { e.preventDefault(); checkGate(); });
+$('btnGateOk').addEventListener('click', checkGate);
+$('btnAdminBypass').addEventListener('click', function () { grantAccess(pendingPick, true); });
+
+function checkGate() {
+  var v = $('gatePass').value.trim();
+  if (!pendingPick) return;
+  if (!canAccess(pendingPick)) { $('gateMsg').textContent = 'บัญชีนี้ไม่มีสิทธิ์เข้าถึงลูกค้ารายนี้'; return; }
+  if (v && strictEq(v, pendingPick.pass)) { grantAccess(pendingPick, false); return; }
+  if (v && v.toLowerCase() === String(pendingPick.pass).toLowerCase()) {
+    gateTries++; $('gatePass').value = '';
+    $('gateMsg').textContent = 'รหัสไม่ตรง — ตรวจสอบตัวพิมพ์ใหญ่/เล็ก (ครั้งที่ ' + gateTries + '/5)';
+    if (gateTries >= 5) { alert('ใส่รหัสผิดเกินกำหนด กรุณาติดต่อผู้ดูแลระบบ'); closeM('gateOverlay'); }
+    return;
+  }
+  gateTries++;
+  logEvent('gate-fail', 'ใส่รหัสลูกค้าผิด: ' + pendingPick.name);
+  $('gateMsg').textContent = 'รหัสเข้าถึงไม่ถูกต้อง (ครั้งที่ ' + gateTries + '/5)';
+  $('gatePass').value = '';
+  if (gateTries >= 5) {
+    alert('ใส่รหัสผิดเกินกำหนด กรุณาติดต่อผู้ดูแลระบบ');
+    closeM('gateOverlay');
+  }
+}
+
+var sessionByMgr = false;
+function grantAccess(cust, byAdmin, silent) {
+  activeCust = cust; sessionByMgr = !!byAdmin;
+  if (!silent) logEvent('customer', 'เปิดข้อมูลลูกค้า: ' + cust.name + (byAdmin ? ' (ข้ามด้วยสิทธิ์ Admin)' : ''));
+  closeM('gateOverlay'); closeM('custOverlay');
+  var chip = $('custChip'); chip.textContent = cust.name; chip.classList.remove('locked');
+  $('custTitle').textContent = 'ข้อมูลลูกค้า — ' + cust.name;
+  $('custDetail').className = '';
+  var mgr = isMgr();
+  $('custDetail').innerHTML = '<div class="custgrid">' +
+    '<div class="kv">' +
+      '<div>ชื่อลูกค้า</div><div>' + esc(cust.name) + '</div>' +
+      '<div>ผู้ติดต่อ</div><div>' + (esc(cust.contact) || '-') + '</div>' +
+      '<div>อีเมล</div><div>' + (esc(cust.email) || '-') + '</div>' +
+      '<div>เบอร์โทร</div><div>' + (esc(cust.phone) || '-') + '</div>' +
+      '<div>หมายเหตุ</div><div>' + (esc(cust.note) || '-') + '</div>' +
+      '<div>สถานะ</div><div>' + (byAdmin ? 'เข้าถึงด้วยสิทธิ์ Admin' : 'ยืนยันรหัสเข้าถึงแล้ว') + '</div>' +
+    '</div>' +
+    '<div><div class="fieldlbl">ที่อยู่</div><div class="addrbox">' + (esc(cust.address) || '-') + '</div></div>' +
+    '<div>' +
+      '<div class="logobox' + (cust.logo ? ' filled' : '') + '">' + (cust.logo ? '<img src="' + esc(cust.logo) + '" alt="โลโก้ลูกค้า" style="width:' + (cust.logoW || 160) + 'px">' : '') + '</div>' +
+      (mgr ? '<div class="logoactions">' +
+        '<button class="btn sm ghost" id="btnSetLogo">' + (cust.logo ? 'แก้ไขโลโก้' : 'ใส่ลิงก์โลโก้') + '</button>' +
+      '</div>' : '') +
+    '</div>' +
+  '</div>';
+  if (mgr && $('btnSetLogo')) $('btnSetLogo').addEventListener('click', openLogoDialog);
+  $('reportPanel').style.display = '';
+  $('repSearch').value = '';
+  if (!silent) activeSite = '';
+  renderSiteTabs();
+  renderReports();
+  saveSession();
+}
+
+/* ตั้งค่าโลโก้ลูกค้าจากลิงก์รูป + ปรับขนาด (เฉพาะ Admin / Editor) */
+function openLogoDialog() {
+  if (!activeCust) return;
+  $('logoFor').textContent = 'ลูกค้า: ' + activeCust.name;
+  $('logoUrl').value = /^data:/i.test(activeCust.logo || '') ? '' : (activeCust.logo || '');
+  $('logoSize').value = activeCust.logoW || 160;
+  $('logoSizeOut').textContent = $('logoSize').value;
+  $('logoMsg').textContent = '';
+  updateLogoPreview();
+  openM('logoOverlay');
+}
+function updateLogoPreview() {
+  var url = $('logoUrl').value.trim(), w = +$('logoSize').value;
+  var img = $('logoPreview');
+  $('logoSizeOut').textContent = w;
+  img.style.width = w + 'px';
+  if (!url) { img.style.display = 'none'; $('logoEmpty').style.display = ''; return; }
+  $('logoEmpty').style.display = 'none';
+  img.style.display = '';
+  if (img.getAttribute('src') !== url) img.src = url;
+}
+$('logoUrl').addEventListener('input', function () { $('logoMsg').textContent = ''; updateLogoPreview(); });
+$('logoSize').addEventListener('input', updateLogoPreview);
+$('logoPreview').addEventListener('error', function () {
+  $('logoMsg').textContent = 'โหลดรูปจากลิงก์นี้ไม่ได้ — ตรวจสอบว่าเป็นลิงก์รูปตรงและเปิดสาธารณะ';
+});
+$('logoPreview').addEventListener('load', function () { $('logoMsg').textContent = ''; });
+$('btnLogoSave').addEventListener('click', function () {
+  if (!activeCust) return;
+  var url = $('logoUrl').value.trim();
+  activeCust.logo = url;
+  activeCust.logoW = +$('logoSize').value;
+  save(LS_CUST, customers);
+  logEvent('profile', 'ตั้งค่าโลโก้ลูกค้า: ' + activeCust.name);
+  closeM('logoOverlay');
+  grantAccess(activeCust, sessionByMgr, true);
+});
+$('btnLogoRemove').addEventListener('click', function () {
+  if (!activeCust || !confirm('ลบโลโก้ของลูกค้ารายนี้?')) return;
+  activeCust.logo = ''; save(LS_CUST, customers);
+  closeM('logoOverlay');
+  grantAccess(activeCust, sessionByMgr, true);
+});
+
+/* ================= REPORT LIST (customer view) ================= */
+$('repSearch').addEventListener('input', renderReports);
+var activeSite = '';
+
+function renderSiteTabs() {
+  var sites = sitesOf(activeCust), box = $('siteTabs');
+  if (!sites || !sites.length) { box.style.display = 'none'; box.innerHTML = ''; activeSite = ''; return; }
+  box.style.display = 'flex';
+  box.innerHTML = ['<button class="tab' + (activeSite ? '' : ' active') + '" data-site="">ทั้งหมด</button>']
+    .concat(sites.map(function (s) {
+      var n = (activeCust.reports || []).filter(function (r) { return (r.site || '') === s; }).length;
+      return '<button class="tab' + (activeSite === s ? ' active' : '') + '" data-site="' + esc(s) + '">' + esc(s) + ' (' + n + ')</button>';
+    })).join('');
+}
+$('siteTabs').addEventListener('click', function (e) {
+  var b = e.target.closest('.tab'); if (!b) return;
+  activeSite = b.dataset.site || '';
+  renderSiteTabs(); renderReports(); saveSession();
+});
+
+function renderReports() {
+  if (!activeCust) return;
+  var sites = sitesOf(activeCust);
+  Array.prototype.forEach.call(document.querySelectorAll('.siteCol'), function (el) { el.style.display = sites ? '' : 'none'; });
+  var q = $('repSearch').value.trim().toLowerCase();
+  var list = (activeCust.reports || []).filter(function (r) {
+    if (activeSite && (r.site || '') !== activeSite) return false;
+    return !q || [r.title, r.date, r.type, r.site].join(' ').toLowerCase().indexOf(q) > -1;
+  });
+  $('repBody').innerHTML = list.map(function (r) {
+    var i = activeCust.reports.indexOf(r);
+    var v = linkVariants(r.url, r.embed);
+    var btns = r.url
+      ? '<button class="btn sm ghost" data-viewrep="' + i + '">อ่าน</button>' +
+        '<button class="btn sm" data-dlrep="' + i + '">ดาวน์โหลด</button>'
+      : '<span style="color:#999">ไม่มีไฟล์</span>';
+    var delBtn = (r.source === 'manifest' && !isMgr())
+      ? '' : '<button class="btn sm danger" data-delrep="' + i + '">ลบ</button>';
+    return '<tr><td>' + esc(r.title) + '</td>' +
+      '<td class="siteCol"' + (sites ? '' : ' style="display:none"') + '>' + esc(r.site || '-') + '</td>' +
+      '<td>' + esc(r.date) + '</td><td>' + esc(r.type) + '</td>' +
+      '<td><div class="row-actions">' + btns + delBtn + '</div></td></tr>';
+  }).join('') || '<tr><td colspan="5" style="color:#777">ยังไม่มีรายงานในส่วนนี้</td></tr>';
+}
+$('repBody').addEventListener('click', function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.viewrep != null) { openViewer(activeCust.reports[+b.dataset.viewrep]); return; }
+  if (b.dataset.dlrep != null) { downloadReport(activeCust.reports[+b.dataset.dlrep], b); return; }
+  if (b.dataset.delrep == null) return;
+  if (confirm('ลบรายงานนี้?')) {
+    var gone = activeCust.reports[+b.dataset.delrep];
+    logEvent('file', 'ลบรายงาน "' + (gone && gone.title) + '" ของ ' + activeCust.name);
+    activeCust.reports.splice(+b.dataset.delrep, 1);
+    save(LS_CUST, customers); renderReports(); renderCustMgmt(); renderRepMgmt();
+  }
+});
+
+/* ============ แปลงลิงก์ OneDrive / SharePoint ============
+   ลิงก์แชร์ปกติจะเปิดเป็นหน้า preview ไม่ใช่ตัวไฟล์
+   - ดาวน์โหลด : เติม download=1  หรือใช้ Shares API สำหรับลิงก์ย่อ 1drv.ms
+   - เปิดอ่าน  : เติม action=embedview เพื่อให้ฝังใน iframe ได้           */
+function isOneDrive(u) { return /(^|\/\/)([^/]*\.)?(sharepoint\.com|onedrive\.live\.com|1drv\.ms)/i.test(u || ''); }
+function b64ShareId(u) {
+  var b = btoa(unescape(encodeURIComponent(u)));
+  return 'u!' + b.replace(/=+$/, '').replace(/\//g, '_').replace(/\+/g, '-');
+}
+function linkVariants(url, embedHint) {
+  var out = { download: url, view: embedHint || url };
+  if (!url || !isOneDrive(url)) return out;
+  var clean = url.split('#')[0];
+  if (/1drv\.ms/i.test(clean)) {
+    try { out.download = 'https://api.onedrive.com/v1.0/shares/' + b64ShareId(clean) + '/root/content'; } catch (e) {}
+    if (!embedHint) out.view = out.download;
+    return out;
+  }
+  var sep = clean.indexOf('?') > -1 ? '&' : '?';
+  out.download = /[?&]download=1/i.test(clean) ? clean : clean + sep + 'download=1';
+  if (!embedHint) out.view = /action=embedview/i.test(clean) ? clean : clean + sep + 'action=embedview';
+  return out;
+}
+
+/* ---- ตัวอ่าน PDF ---- */
+var viewerBlobUrl = null;
+function dataUrlToBlobUrl(u) {
+  var parts = u.split(','), meta = parts[0], b64 = parts.slice(1).join(',');
+  var mime = (meta.match(/:(.*?);/) || [, 'application/pdf'])[1];
+  var bin = atob(b64), len = bin.length, arr = new Uint8Array(len);
+  for (var i = 0; i < len; i++) arr[i] = bin.charCodeAt(i);
+  return URL.createObjectURL(new Blob([arr], { type: mime }));
+}
+function openViewer(r) {
+  if (!r || !r.url) return;
+  if (viewerBlobUrl) { URL.revokeObjectURL(viewerBlobUrl); viewerBlobUrl = null; }
+  var v = linkVariants(r.url, r.embed);
+  var dlName = (r.filename || r.title || 'report') + (/\.pdf$/i.test(r.filename || '') ? '' : '.pdf');
+  $('viewTitle').textContent = r.title || 'อ่านรายงาน';
+  $('viewDl').setAttribute('download', dlName);
+  $('viewOpenTab').style.display = 'none';
+  $('viewHint').style.display = 'none';
+  openM('viewOverlay');
+
+  /* ไฟล์ที่อัปโหลดไว้ในเครื่อง */
+  if (/^data:/i.test(r.url)) {
+    try {
+      var b = viewerBlobUrl = dataUrlToBlobUrl(r.url);
+      showInViewer(b, b); return;
+    } catch (err) { alert('เปิดไฟล์ไม่สำเร็จ'); closeM('viewOverlay'); return; }
+  }
+
+  /* ดึงไฟล์มาเป็น blob เพื่อแสดงในเว็บโดยไม่พาผู้ใช้ไปหน้าต้นทาง */
+  $('viewFrame').src = 'about:blank';
+  $('viewLoading').style.display = '';
+  $('viewDl').href = v.download;
+  fetch(v.download, { mode: 'cors', credentials: 'omit' })
+    .then(function (res) { if (!res.ok) throw new Error('http ' + res.status); return res.blob(); })
+    .then(function (blob) {
+      if (blob.type && blob.type.indexOf('pdf') < 0 && blob.type.indexOf('octet-stream') < 0) throw new Error('not pdf');
+      viewerBlobUrl = URL.createObjectURL(blob.type ? blob : new Blob([blob], { type: 'application/pdf' }));
+      showInViewer(viewerBlobUrl, viewerBlobUrl);
+    })
+    .catch(function () {
+      /* ต้นทางไม่อนุญาตให้ดึงข้ามโดเมน — ใช้วิธีฝังหน้าแสดงผลแทน */
+      $('viewLoading').style.display = 'none';
+      $('viewFrame').src = v.view;
+      $('viewHint').style.display = '';
+      $('viewOpenTab').style.display = '';
+      $('viewOpenTab').href = v.view;
+    });
+}
+/* ดาวน์โหลดโดยไม่พาผู้ใช้ออกไปหน้าต้นทาง */
+function downloadReport(r, btn) {
+  if (!r || !r.url) return;
+  var v = linkVariants(r.url, r.embed);
+  var name = (r.filename || r.title || 'report') + (/\.pdf$/i.test(r.filename || '') ? '' : '.pdf');
+  if (/^data:/i.test(r.url)) {
+    var a0 = document.createElement('a'); a0.href = r.url; a0.download = name; a0.click(); return;
+  }
+  var old = btn ? btn.textContent : '';
+  if (btn) { btn.textContent = 'กำลังโหลด...'; btn.disabled = true; }
+  fetch(v.download, { mode: 'cors', credentials: 'omit' })
+    .then(function (res) { if (!res.ok) throw new Error('http'); return res.blob(); })
+    .then(function (blob) {
+      var u = URL.createObjectURL(blob);
+      var a = document.createElement('a'); a.href = u; a.download = name; a.click();
+      setTimeout(function () { URL.revokeObjectURL(u); }, 30000);
+    })
+    .catch(function () { window.open(v.download, '_blank'); })   /* ต้นทางไม่ให้ดึงข้ามโดเมน */
+    .then(function () { if (btn) { btn.textContent = old; btn.disabled = false; } });
+}
+
+function showInViewer(frameSrc, dlHref) {
+  $('viewLoading').style.display = 'none';
+  $('viewFrame').src = frameSrc;
+  $('viewDl').href = dlHref;
+}
+$('viewOverlay').addEventListener('click', function (e) {
+  if (e.target.getAttribute('data-close')) { $('viewFrame').src = 'about:blank'; }
+});
+
+/* ---- เพิ่ม PDF จากหน้าลูกค้า ---- */
+$('btnAddPdf').addEventListener('click', function () {
+  if (!activeCust) return;
+  $('addPdfFor').textContent = 'ลูกค้า: ' + activeCust.name;
+  var sites = sitesOf(activeCust);
+  $('pSiteWrap').style.display = sites ? '' : 'none';
+  if (sites) {
+    $('pSite').innerHTML = sites.map(function (s) { return '<option value="' + esc(s) + '">' + esc(s) + '</option>'; }).join('');
+    if (activeSite) $('pSite').value = activeSite;
+  }
+  ['pTitle', 'pDate', 'pType', 'pUrl'].forEach(function (id) { $(id).value = ''; });
+  $('pFile').value = ''; $('pdfMsg').textContent = '';
+  $('pDate').value = new Date().toISOString().slice(0, 10);
+  openM('addPdfOverlay');
+});
+$('addPdfForm').addEventListener('submit', function (e) { e.preventDefault(); savePdf(); });
+$('btnSavePdf').addEventListener('click', savePdf);
+$('pFile').addEventListener('change', function () {
+  var f = this.files[0];
+  if (f && !$('pTitle').value.trim()) $('pTitle').value = f.name.replace(/\.pdf$/i, '');
+});
+
+function savePdf() {
+  if (!activeCust) return;
+  var title = $('pTitle').value.trim(), f = $('pFile').files[0], url = $('pUrl').value.trim();
+  if (!title) { $('pdfMsg').textContent = 'กรุณากรอกชื่อรายงาน'; return; }
+  if (!f && !url) { $('pdfMsg').textContent = 'เลือกไฟล์ PDF หรือวางลิงก์อย่างใดอย่างหนึ่ง'; return; }
+  var rec = { title: title, date: $('pDate').value.trim(), type: $('pType').value.trim(), url: url, filename: '', site: sitesOf(activeCust) ? $('pSite').value : '' };
+  if (!f) { commitPdf(rec); return; }
+  if (f.size > 5 * 1024 * 1024) { $('pdfMsg').textContent = 'ไฟล์ใหญ่เกิน 5 MB — กรุณาใช้วิธีวางลิงก์แทน'; return; }
+  $('pdfMsg').textContent = 'กำลังอ่านไฟล์...';
+  var rd = new FileReader();
+  rd.onload = function () { rec.url = rd.result; rec.filename = f.name; commitPdf(rec); };
+  rd.onerror = function () { $('pdfMsg').textContent = 'อ่านไฟล์ไม่สำเร็จ'; };
+  rd.readAsDataURL(f);
+}
+function commitPdf(rec) {
+  if (!activeCust.reports) activeCust.reports = [];
+  activeCust.reports.push(rec);
+  try { save(LS_CUST, customers); }
+  catch (err) {
+    activeCust.reports.pop();
+    $('pdfMsg').textContent = 'พื้นที่จัดเก็บของเบราว์เซอร์เต็ม — กรุณาใช้วิธีวางลิงก์ไฟล์แทนการอัปโหลด';
+    return;
+  }
+  logEvent('file', 'เพิ่มรายงาน "' + rec.title + '" ให้ ' + activeCust.name + (rec.site ? ' / ' + rec.site : ''));
+  closeM('addPdfOverlay');
+  renderSiteTabs(); renderReports(); renderCustMgmt(); renderRepMgmt(); renderPick();
+}
+
+/* ================= PROFILE / รูปประจำตัว ================= */
+var profTarget = null, profAvatar = 0, profPhoto = '';
+
+$('btnProfile').addEventListener('click', function () { openProfile(currentUser); });
+function openProfile(u) {
+  if (!u) return;
+  profTarget = u;
+  profAvatar = typeof u.avatar === 'number' ? u.avatar : 0;
+  profPhoto = u.photo || '';
+  $('profileTitle').textContent = (u === currentUser) ? 'โปรไฟล์ของฉัน' : 'แก้ไขผู้ใช้: ' + u.username;
+  $('profName').value = u.name || '';
+  var canName = currentUser && (currentUser.role === 'admin' || currentUser.role === 'editor');
+  $('profName').disabled = !canName;
+  $('profNameNote').style.display = canName ? 'none' : '';
+  $('profPreview').src = profPhoto || avatarUrl(profAvatar);
+  renderAvGrid();
+  openM('profileOverlay');
+}
+function renderAvGrid() {
+  var html = '';
+  for (var i = 0; i < 20; i++) {
+    html += '<button type="button" data-av="' + i + '" class="' + (!profPhoto && profAvatar === i ? 'sel' : '') + '"><img src="' + avatarUrl(i) + '" alt=""></button>';
+  }
+  $('avGrid').innerHTML = html;
+}
+$('avGrid').addEventListener('click', function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  profAvatar = +b.dataset.av; profPhoto = '';
+  $('profPreview').src = avatarUrl(profAvatar);
+  renderAvGrid();
+});
+$('profFile').addEventListener('change', function (e) {
+  var f = e.target.files[0]; if (!f) return;
+  var rd = new FileReader();
+  rd.onload = function () {
+    var img = new Image();
+    img.onload = function () {
+      var s = 128, cv = document.createElement('canvas'); cv.width = cv.height = s;
+      var ctx = cv.getContext('2d');
+      var m = Math.min(img.width, img.height);
+      ctx.drawImage(img, (img.width - m) / 2, (img.height - m) / 2, m, m, 0, 0, s, s);
+      profPhoto = cv.toDataURL('image/jpeg', 0.82);
+      $('profPreview').src = profPhoto; renderAvGrid();
+    };
+    img.src = rd.result;
+  };
+  rd.readAsDataURL(f); e.target.value = '';
+});
+$('btnSaveProfile').addEventListener('click', function () {
+  if (!profTarget) return;
+  if (!$('profName').disabled) profTarget.name = $('profName').value.trim() || profTarget.username;
+  if (profPhoto) { profTarget.photo = profPhoto; delete profTarget.avatar; }
+  else { profTarget.avatar = profAvatar; delete profTarget.photo; }
+  try { save(LS_USERS, users); }
+  catch (err) { alert('พื้นที่จัดเก็บเต็ม — ลองเลือกรูปสำเร็จรูปแทนการอัปโหลด'); return; }
+  logEvent('profile', 'แก้ไขโปรไฟล์: ' + profTarget.username);
+  if (profTarget === currentUser) {
+    $('whoAmI').textContent = currentUser.name + ' (' + currentUser.role + ')';
+    $('myAvatar').src = userAvatar(currentUser);
+  }
+  closeM('profileOverlay'); renderUsers();
+});
+
+/* ================= MANAGEMENT ================= */
+$('btnManage').addEventListener('click', function () {
+  var isAdmin = currentUser && currentUser.role === 'admin';
+  var tabH = document.querySelector('.tab[data-tab="history"]');
+  if (tabH) tabH.style.display = isAdmin ? '' : 'none';
+  $('userFormBox').style.display = isMgr() ? '' : 'none';
+  showTab('users');
+  if (isAdmin) renderHistory();
+  openM('mgmtOverlay');
+});
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach(function (x) { x.classList.toggle('active', x.dataset.tab === name); });
+  ['users', 'customers', 'reports', 'history'].forEach(function (n) { $('tab-' + n).style.display = (name === n) ? '' : 'none'; });
+}
+Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) {
+  t.addEventListener('click', function () {
+    if (!t.dataset.tab) return;
+    showTab(t.dataset.tab);
+    if (t.dataset.tab === 'history') renderHistory();
+  });
+});
+
+/* ================= HISTORY ================= */
+var TYPE_TH = { 'login': 'เข้าสู่ระบบ', 'login-fail': 'เข้าสู่ระบบไม่สำเร็จ', 'logout': 'ออกจากระบบ', 'customer': 'เปิดข้อมูลลูกค้า', 'gate-fail': 'รหัสลูกค้าผิด', 'file': 'ไฟล์รายงาน', 'profile': 'แก้ไขโปรไฟล์' };
+function renderHistory() {
+  var cut = Date.now() - LOG_DAYS * 86400000;
+  var log = (load(LS_LOG, []) || []).filter(function (e) { return e.t >= cut; });
+  var q = $('hSearch').value.trim().toLowerCase(), ty = $('hType').value;
+  var list = log.filter(function (e) {
+    if (ty && e.type !== ty) return false;
+    return !q || [e.user, e.name, e.detail, TYPE_TH[e.type] || e.type].join(' ').toLowerCase().indexOf(q) > -1;
+  }).sort(function (a, b) { return b.t - a.t; });
+  $('hBody').innerHTML = list.map(function (e) {
+    var d = new Date(e.t);
+    var ts = d.toLocaleDateString('th-TH') + ' ' + d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+    var color = (e.type === 'login-fail' || e.type === 'gate-fail') ? ' style="color:#b3261e"' : '';
+    return '<tr><td>' + ts + '</td><td>' + esc(e.name) + '<div style="font-size:12px;color:#777">' + esc(e.user) + '</div></td>' +
+      '<td>' + esc(e.role) + '</td><td' + color + '>' + esc(TYPE_TH[e.type] || e.type) + '</td><td>' + esc(e.detail) + '</td></tr>';
+  }).join('') || '<tr><td colspan="5" style="color:#777">ไม่มีข้อมูลในช่วง 3 เดือนที่ผ่านมา</td></tr>';
+  $('hCount').textContent = 'แสดง ' + list.length + ' รายการ จากทั้งหมด ' + log.length + ' (เก็บย้อนหลัง 3 เดือน)';
+}
+$('hSearch').addEventListener('input', renderHistory);
+$('hType').addEventListener('change', renderHistory);
+$('btnClearLog').addEventListener('click', function () {
+  if (confirm('ล้างประวัติการใช้งานทั้งหมด?')) { save(LS_LOG, []); renderHistory(); }
+});
+$('btnExportLog').addEventListener('click', function () {
+  var log = (load(LS_LOG, []) || []).sort(function (a, b) { return b.t - a.t; });
+  var csv = '﻿DateTime,Username,Name,Role,Event,Detail\n' + log.map(function (e) {
+    return '"' + new Date(e.t).toLocaleString('th-TH') + '","' + e.user + '","' + e.name + '","' + e.role + '","' + (TYPE_TH[e.type] || e.type) + '","' + String(e.detail).replace(/"/g, '""') + '"';
+  }).join('\n');
+  dl(new Blob([csv], { type: 'text/csv;charset=utf-8' }), 'usage_history.csv');
+});
+
+/* ---- users ---- */
+function scopeText(u) {
+  if (u.role === 'admin') return 'ทั้งหมด (Admin)';
+  if (u.scope !== 'selected' && u.role === 'editor') return 'ทั้งหมด (Editor)';
+  if (u.scope !== 'selected') return 'ทั้งหมด';
+  var a = u.allowed || [];
+  if (!a.length) return '<span style="color:#b3261e">ยังไม่ได้เลือก</span>';
+  return a.length <= 2 ? esc(a.join(', ')) : esc(a[0]) + ' +อีก ' + (a.length - 1);
+}
+function renderUsers() {
+  var isAdmin = isMgr();
+  Array.prototype.forEach.call(document.querySelectorAll('.admCol'), function (el) { el.style.display = isAdmin ? '' : 'none'; });
+  $('userBody').innerHTML = users.map(function (u, i) {
+    return '<tr><td><img src="' + userAvatar(u) + '" alt="" style="width:34px;height:34px;border-radius:50%;object-fit:cover;display:block"></td>' +
+      '<td>' + esc(u.username) + '</td><td>' + esc(u.name) + '</td><td>' + esc(u.role) + '</td>' +
+      (isAdmin ? '<td class="admCol code">' + esc(u.password) + '</td><td class="admCol">' + scopeText(u) + '</td>' : '') +
+      '<td><div class="row-actions"><button class="btn sm ghost" data-pu="' + i + '">ชื่อ+รูป</button>' +
+      (isAdmin ? '<button class="btn sm ghost" data-eu="' + i + '">แก้ไข</button>' +
+        (u.username.toLowerCase() === 'admin' ? '' : '<button class="btn sm danger" data-du="' + i + '">ลบ</button>') : '') +
+      '</div></td></tr>';
+  }).join('');
+}
+
+/* ---- เลือกลูกค้าที่ผู้ใช้เข้าถึงได้ ---- */
+var allowedDraft = [];
+function renderAllowedList() {
+  var q = $('uAllowedSearch').value.trim().toLowerCase();
+  $('uAllowedList').innerHTML = customers.filter(function (c) { return !q || c.name.toLowerCase().indexOf(q) > -1; })
+    .map(function (c) {
+      var on = allowedDraft.some(function (n) { return n.toLowerCase() === c.name.toLowerCase(); });
+      return '<label style="display:block;padding:3px 0;font-size:15px;text-transform:none;font-weight:400">' +
+        '<input type="checkbox" data-cust="' + esc(c.name) + '"' + (on ? ' checked' : '') + '> ' + esc(c.name) + '</label>';
+    }).join('') || '<div style="color:#777">ไม่พบรายชื่อ</div>';
+}
+$('uAllowedSearch').addEventListener('input', renderAllowedList);
+$('uAllowedList').addEventListener('change', function (e) {
+  var cb = e.target; if (!cb.dataset.cust) return;
+  var n = cb.dataset.cust;
+  allowedDraft = allowedDraft.filter(function (x) { return x.toLowerCase() !== n.toLowerCase(); });
+  if (cb.checked) allowedDraft.push(n);
+});
+$('uAllowedAll').addEventListener('click', function () { allowedDraft = customers.map(function (c) { return c.name; }); renderAllowedList(); });
+$('uAllowedNone').addEventListener('click', function () { allowedDraft = []; renderAllowedList(); });
+$('uScope').addEventListener('change', function () {
+  $('uAllowedWrap').style.display = this.value === 'selected' ? '' : 'none';
+  if (this.value === 'selected') renderAllowedList();
+});
+$('uRole').addEventListener('change', function () {
+  var isAdmin = this.value === 'admin';
+  $('uScope').disabled = isAdmin;
+  if (isAdmin) { $('uScope').value = 'all'; $('uAllowedWrap').style.display = 'none'; }
+});
+$('userBody').addEventListener('click', function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.pu != null) { openProfile(users[+b.dataset.pu]); return; }
+  if (b.dataset.eu != null) {
+    var u = users[+b.dataset.eu]; editUserIdx = +b.dataset.eu;
+    $('uUser').value = u.username; $('uName').value = u.name; $('uPass').value = u.password; $('uRole').value = u.role;
+    $('uScope').value = u.scope === 'selected' ? 'selected' : 'all';
+    $('uScope').disabled = u.role === 'admin';
+    allowedDraft = (u.allowed || []).slice();
+    $('uAllowedWrap').style.display = (u.role !== 'admin' && u.scope === 'selected') ? '' : 'none';
+    $('uAllowedSearch').value = ''; renderAllowedList();
+  } else if (b.dataset.du != null) {
+    if (confirm('ลบผู้ใช้นี้?')) { users.splice(+b.dataset.du, 1); save(LS_USERS, users); renderUsers(); }
+  }
+});
+$('btnSaveUser').addEventListener('click', function () {
+  var u = $('uUser').value.trim(), n = $('uName').value.trim(), p = $('uPass').value, r = $('uRole').value;
+  if (!u || !p) { alert('กรอก Username และ Password'); return; }
+  var scope = r === 'admin' ? 'all' : $('uScope').value;
+  if (scope === 'selected' && !allowedDraft.length) { alert('กรุณาเลือกลูกค้าอย่างน้อย 1 ราย หรือเปลี่ยนเป็น "ดูได้ทุกลูกค้า"'); return; }
+  var prev = editUserIdx > -1 ? users[editUserIdx] : null;
+  var rec = {
+    username: u, name: n || u, password: p, role: r, scope: scope,
+    allowed: scope === 'selected' ? allowedDraft.slice() : [],
+    avatar: prev && typeof prev.avatar === 'number' ? prev.avatar : (users.length % 20),
+    photo: prev ? prev.photo : ''
+  };
+  if (!rec.photo) delete rec.photo;
+  var dup = users.findIndex(function (x) { return x.username.toLowerCase() === u.toLowerCase(); });
+  if (editUserIdx > -1) users[editUserIdx] = rec;
+  else if (dup > -1) { alert('มี Username นี้อยู่แล้ว'); return; }
+  else users.push(rec);
+  save(LS_USERS, users); clearUserForm(); renderUsers();
+});
+$('btnClearUser').addEventListener('click', clearUserForm);
+function clearUserForm() {
+  editUserIdx = -1; allowedDraft = [];
+  ['uUser', 'uName', 'uPass', 'uAllowedSearch'].forEach(function (id) { $(id).value = ''; });
+  $('uRole').value = 'user'; $('uScope').value = 'all'; $('uScope').disabled = false;
+  $('uAllowedWrap').style.display = 'none';
+}
+
+/* ---- customers ---- */
+function renderCustMgmt() {
+  $('custMgmtBody').innerHTML = customers.map(function (c, i) {
+    return '<tr><td>' + esc(c.name) + '</td><td class="code">' + esc(c.pass) + '</td><td>' + esc(c.contact) + '</td><td>' + (c.reports ? c.reports.length : 0) + '</td>' +
+      '<td><div class="row-actions"><button class="btn sm ghost" data-ec="' + i + '">แก้ไข</button><button class="btn sm danger" data-dc="' + i + '">ลบ</button></div></td></tr>';
+  }).join('') || '<tr><td colspan="5" style="color:#777">ยังไม่มีข้อมูล</td></tr>';
+}
+$('custMgmtBody').addEventListener('click', function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.ec != null) {
+    var i = +b.dataset.ec, c = customers[i]; editCustIdx = i;
+    $('cName').value = c.name || ''; $('cPass').value = c.pass || ''; $('cContact').value = c.contact || '';
+    $('cEmail').value = c.email || ''; $('cPhone').value = c.phone || ''; $('cNote').value = c.note || '';
+    $('cAddress').value = c.address || '';
+  } else if (b.dataset.dc != null) {
+    if (confirm('ลบลูกค้ารายนี้ (รวมรายการรายงาน)?')) {
+      customers.splice(+b.dataset.dc, 1); persistCust();
+    }
+  }
+});
+$('btnSaveCust').addEventListener('click', function () {
+  var name = $('cName').value.trim();
+  if (!name) { alert('กรอกชื่อลูกค้า'); return; }
+  var obj = {
+    name: name, pass: $('cPass').value.trim() || genCode(name), contact: $('cContact').value.trim(),
+    email: $('cEmail').value.trim(), phone: $('cPhone').value.trim(), note: $('cNote').value.trim(),
+    address: $('cAddress').value.trim(),
+    logo: editCustIdx > -1 ? (customers[editCustIdx].logo || '') : '',
+    sites: editCustIdx > -1 ? (customers[editCustIdx].sites || null) : (groupOf(name) ? groupOf(name).sites.slice() : null),
+    reports: editCustIdx > -1 ? (customers[editCustIdx].reports || []) : []
+  };
+  if (editCustIdx > -1) customers[editCustIdx] = obj; else customers.push(obj);
+  clearCustForm(); persistCust();
+});
+$('btnClearCust').addEventListener('click', clearCustForm);
+function clearCustForm() { editCustIdx = -1; ['cName', 'cPass', 'cContact', 'cEmail', 'cPhone', 'cNote', 'cAddress'].forEach(function (id) { $(id).value = ''; }); }
+function persistCust() { save(LS_CUST, customers); renderCustMgmt(); renderPick(); renderRepMgmt(); fillCustSelect(); }
+
+$('btnExportCodes').addEventListener('click', function () {
+  var csv = '﻿Customer,AccessCode,Contact,Email,Phone\n' + customers.map(function (c) {
+    return '"' + c.name + '","' + c.pass + '","' + (c.contact || '') + '","' + (c.email || '') + '","' + (c.phone || '') + '"';
+  }).join('\n');
+  dl(new Blob([csv], { type: 'text/csv;charset=utf-8' }), 'customer_access_codes.csv');
+});
+
+/* ---- reports ---- */
+function fillCustSelect() {
+  $('rCust').innerHTML = customers.map(function (c, i) { return '<option value="' + i + '">' + esc(c.name) + '</option>'; }).join('');
+  fillSiteSelect();
+}
+function fillSiteSelect(preset) {
+  var c = customers[+$('rCust').value] || customers[0];
+  var sites = sitesOf(c);
+  $('rSiteWrap').style.display = sites ? '' : 'none';
+  $('rSite').innerHTML = sites ? sites.map(function (s) { return '<option value="' + esc(s) + '">' + esc(s) + '</option>'; }).join('') : '';
+  if (sites && preset) $('rSite').value = preset;
+}
+$('rCust').addEventListener('change', function () { fillSiteSelect(); });
+function renderRepMgmt() {
+  var rows = [];
+  customers.forEach(function (c, ci) {
+    (c.reports || []).forEach(function (r, ri) {
+      rows.push('<tr><td>' + esc(c.name) + (r.site ? ' <span style="color:#666">/ ' + esc(r.site) + '</span>' : '') + '</td><td>' + esc(r.title) + '</td><td>' + esc(r.date) + '</td><td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(r.url) + '</td>' +
+        '<td><div class="row-actions"><button class="btn sm ghost" data-er="' + ci + ':' + ri + '">แก้ไข</button><button class="btn sm danger" data-dr="' + ci + ':' + ri + '">ลบ</button></div></td></tr>');
+    });
+  });
+  $('repMgmtBody').innerHTML = rows.join('') || '<tr><td colspan="5" style="color:#777">ยังไม่มีรายงาน</td></tr>';
+}
+$('repMgmtBody').addEventListener('click', function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  var key = b.dataset.er || b.dataset.dr; if (!key) return;
+  var p = key.split(':'), ci = +p[0], ri = +p[1];
+  if (b.dataset.er) {
+    var r = customers[ci].reports[ri]; editRep = { ci: ci, ri: ri };
+    $('rCust').value = ci; fillSiteSelect(r.site || '');
+    $('rTitle').value = r.title || ''; $('rDate').value = r.date || ''; $('rType').value = r.type || ''; $('rUrl').value = r.url || ''; $('rEmbed').value = r.embed || '';
+  } else if (confirm('ลบรายงานนี้?')) {
+    customers[ci].reports.splice(ri, 1); persistCust(); if (activeCust) renderReports();
+  }
+});
+$('btnSaveRep').addEventListener('click', function () {
+  var ci = +$('rCust').value;
+  var r = { title: $('rTitle').value.trim(), date: $('rDate').value.trim(), type: $('rType').value.trim(), url: $('rUrl').value.trim(), embed: $('rEmbed').value.trim(), site: sitesOf(customers[ci]) ? $('rSite').value : '' };
+  if (!r.title) { alert('กรอกชื่อรายงาน'); return; }
+  if (!customers[ci].reports) customers[ci].reports = [];
+  if (editRep) {
+    if (editRep.ci === ci) customers[ci].reports[editRep.ri] = r;
+    else { customers[editRep.ci].reports.splice(editRep.ri, 1); customers[ci].reports.push(r); }
+  } else customers[ci].reports.push(r);
+  clearRepForm(); persistCust(); if (activeCust) renderReports();
+});
+$('btnClearRep').addEventListener('click', clearRepForm);
+function clearRepForm() { editRep = null; ['rTitle', 'rDate', 'rType', 'rUrl', 'rEmbed'].forEach(function (id) { $(id).value = ''; }); }
+
+/* ---- import / backup ---- */
+function parseCSV(text) {
+  var rows = [], row = [], cur = '', q = false; text = text.replace(/^﻿/, '');
+  for (var i = 0; i < text.length; i++) {
+    var ch = text[i];
+    if (q) { if (ch === '"' && text[i + 1] === '"') { cur += '"'; i++; } else if (ch === '"') q = false; else cur += ch; }
+    else if (ch === '"') q = true;
+    else if (ch === ',') { row.push(cur); cur = ''; }
+    else if (ch === '\n') { row.push(cur); rows.push(row); row = []; cur = ''; }
+    else if (ch !== '\r') cur += ch;
+  }
+  if (cur !== '' || row.length) { row.push(cur); rows.push(row); }
+  if (!rows.length) return [];
+  var head = rows.shift().map(function (h) { return h.trim().toLowerCase(); });
+  return rows.filter(function (r) { return r.some(function (v) { return v.trim() !== ''; }); })
+    .map(function (r) { var o = {}; head.forEach(function (h, i) { o[h] = (r[i] || '').trim(); }); return o; });
+}
+$('importRep').addEventListener('change', function (e) {
+  var f = e.target.files[0]; if (!f) return;
+  var rd = new FileReader();
+  rd.onload = function () {
+    var raw = [];
+    try { raw = /\.json$/i.test(f.name) ? JSON.parse(rd.result) : parseCSV(rd.result); }
+    catch (err) { alert('อ่านไฟล์ไม่สำเร็จ: ' + err.message); return; }
+    var added = 0, missing = [];
+    raw.forEach(function (r) {
+      var cn = (r.customer || r['ลูกค้า'] || '').trim(); if (!cn) return;
+      var c = customers.find(function (x) { return x.name.toLowerCase() === cn.toLowerCase(); });
+      if (!c) { c = { name: cn, pass: genCode(cn), contact: '', email: '', phone: '', address: '', note: '', logo: '', reports: [] }; customers.push(c); missing.push(cn); }
+      if (!c.reports) c.reports = [];
+      c.reports.push({ title: r.title || r['ชื่อรายงาน'] || '', date: r.date || r['วันที่'] || '', type: r.type || r['ประเภท'] || '', site: r.site || r['ไซต์'] || '', url: r.url || r['ลิงก์'] || '' });
+      added++;
+    });
+    persistCust(); if (activeCust) renderReports();
+    alert('นำเข้า ' + added + ' รายการ' + (missing.length ? '\nเพิ่มลูกค้าใหม่: ' + missing.join(', ') : ''));
+  };
+  rd.readAsText(f, 'utf-8'); e.target.value = '';
+});
+$('btnExportManifest').addEventListener('click', function () {
+  var map = {}, n = 0;
+  customers.forEach(function (c) {
+    var list = (c.reports || []).filter(function (r) { return r.url && !/^data:/i.test(r.url); })
+      .map(function (r) { return { title: r.title, date: r.date, type: r.type, site: r.site || '', url: r.url, filename: r.filename || '' }; });
+    if (list.length) { map[c.name] = list; n += list.length; }
+  });
+  dl(new Blob([JSON.stringify({ generated: new Date().toISOString().slice(0, 19).replace('T', ' '), customers: map }, null, 2)], { type: 'application/json' }), 'reports.json');
+  alert('ส่งออก ' + n + ' รายการ\nนำไฟล์ reports.json ไปวางไว้ข้าง index.html บนเว็บ\n(ไฟล์ที่อัปโหลดเก็บในเบราว์เซอร์จะไม่ถูกรวม เพราะไม่มี URL จริง)');
+});
+$('btnExportSeed').addEventListener('click', function () {
+  var big = 0;
+  var custOut = customers.map(function (c) {
+    var o = {};
+    Object.keys(c).forEach(function (k) { if (k !== 'reports') o[k] = c[k]; });
+    o.reports = (c.reports || []).filter(function (r) {
+      if (/^data:/i.test(r.url || '')) { big++; return false; }   /* ไฟล์ที่อัปโหลดในเครื่อง ใหญ่เกินจะใส่ในไฟล์ตั้งค่า */
+      return r.source !== 'manifest';
+    });
+    return o;
+  });
+  var payload = { version: Date.now(), generated: new Date().toLocaleString('th-TH'), users: users, customers: custOut };
+  dl(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }), 'data.json');
+  alert('ส่งออก data.json แล้ว\n\nนำไฟล์นี้ไปวางไว้ข้าง index.html บนเว็บ\nระบบจะใช้รหัสผ่านและรหัสลูกค้าชุดนี้ทุกเครื่อง'
+    + (big ? '\n\nหมายเหตุ: ข้ามไฟล์ PDF ที่อัปโหลดเก็บในเบราว์เซอร์ ' + big + ' รายการ (ต้องใช้วิธีวางลิงก์หรือใส่ในโฟลเดอร์ reports แทน)' : ''));
+});
+$('btnExportAll').addEventListener('click', function () {
+  dl(new Blob([JSON.stringify({ users: users, customers: customers }, null, 2)], { type: 'application/json' }), 'hcr_backup.json');
+});
+$('restoreFile').addEventListener('change', function (e) {
+  var f = e.target.files[0]; if (!f) return;
+  var rd = new FileReader();
+  rd.onload = function () {
+    try {
+      var d = JSON.parse(rd.result);
+      if (d.users) { users = d.users; save(LS_USERS, users); renderUsers(); }
+      if (d.customers) { customers = d.customers; persistCust(); }
+      alert('กู้คืนข้อมูลสำเร็จ');
+    } catch (err) { alert('ไฟล์ไม่ถูกต้อง'); }
+  };
+  rd.readAsText(f, 'utf-8'); e.target.value = '';
+});
+function dl(blob, name) { var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); }
+</script>
+</body>
+</html>
