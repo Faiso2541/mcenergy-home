@@ -1,6 +1,6 @@
 {
-  "version": 1786587888222,
-  "generated": "13/8/2569 09:24:48",
+  "version": 1786602940593,
+  "generated": "13/8/2569 13:35:40",
   "users": [
     {
       "username": "Admin",
@@ -28,6 +28,24 @@
       "scope": "all",
       "allowed": [],
       "avatar": 2
+    },
+    {
+      "username": "Kenny",
+      "password": "kenny@1234",
+      "name": "Kenny",
+      "role": "editor",
+      "avatar": 4,
+      "scope": "all",
+      "allowed": []
+    },
+    {
+      "username": "Service",
+      "password": "service@1234",
+      "name": "Service",
+      "role": "editor",
+      "avatar": 8,
+      "scope": "all",
+      "allowed": []
     }
   ],
   "customers": [
@@ -44,7 +62,7 @@
         "3M Innovation",
         "3M Thailand"
       ],
-      "logoW": 184,
+      "logoW": 216,
       "reports": []
     },
     {
@@ -55,8 +73,9 @@
       "phone": "",
       "address": "",
       "note": "",
-      "logo": "",
+      "logo": "https://seeklogo.com/images/A/after-you-logo-350FBCF79B-seeklogo.com.png",
       "sites": null,
+      "logoW": 160,
       "reports": []
     },
     {
@@ -163,13 +182,14 @@
       "phone": "",
       "address": "",
       "note": "",
-      "logo": "",
+      "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaRXhUF37MYfFZCkaGPxgHHhwJaXXb1jKVaXJICt06Bw&s=10",
       "sites": [
         "Colgate GDC",
         "Colgate ILP",
         "Colgate RPL",
         "Colgate RSP"
       ],
+      "logoW": 240,
       "reports": []
     },
     {
@@ -180,8 +200,9 @@
       "phone": "",
       "address": "",
       "note": "",
-      "logo": "",
+      "logo": "https://media.jobthai.com/v1/images/logo-pic-map/101001_logo_20191028165749.jpeg",
       "sites": null,
+      "logoW": 160,
       "reports": []
     },
     {
@@ -192,8 +213,9 @@
       "phone": "",
       "address": "",
       "note": "",
-      "logo": "",
+      "logo": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Logo_of_the_Government_Pension_Fund_Thailand.svg?utm_source=th.wikipedia.org&utm_campaign=index&utm_content=original",
       "sites": null,
+      "logoW": 240,
       "reports": []
     },
     {
@@ -312,8 +334,9 @@
       "phone": "",
       "address": "",
       "note": "",
-      "logo": "",
+      "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFEFD_LUziADtS-phTeTuR6zc63VS61AgxSkhNVmk_5hXaVkzxR1AwKWQX&s=10",
       "sites": null,
+      "logoW": 240,
       "reports": []
     },
     {
@@ -324,8 +347,9 @@
       "phone": "",
       "address": "",
       "note": "",
-      "logo": "",
+      "logo": "https://www.biotec.or.th/default/wp-content/uploads/2020/02/client1.jpg",
       "sites": null,
+      "logoW": 240,
       "reports": []
     },
     {
@@ -336,8 +360,9 @@
       "phone": "",
       "address": "",
       "note": "",
-      "logo": "",
+      "logo": "https://www.biotec.or.th/home/wp-content/uploads/2020/09/A5FCCBD8-FE53-4097-88ED-93D171F7F5D3_4_5005_c-1.jpeg",
       "sites": null,
+      "logoW": 240,
       "reports": []
     },
     {
@@ -348,8 +373,9 @@
       "phone": "",
       "address": "",
       "note": "",
-      "logo": "",
+      "logo": "https://www.biotec.or.th/default/wp-content/uploads/2020/09/E060CDDD-D925-4AC7-854A-CFDFACBD55EF_4_5005_c-1.jpeg",
       "sites": null,
+      "logoW": 240,
       "reports": []
     },
     {
@@ -372,8 +398,9 @@
       "phone": "",
       "address": "",
       "note": "",
-      "logo": "",
+      "logo": "https://www.nstda.or.th/ssh/wp-content/uploads/2022/11/Logo_SSH_color-768x543.jpg",
       "sites": null,
+      "logoW": 240,
       "reports": []
     },
     {
@@ -384,9 +411,27 @@
       "phone": "",
       "address": "",
       "note": "",
-      "logo": "",
+      "logo": "https://www.nxp.com/shared/oneTrust/oneTrust_production/consent/91cc4c7b-323c-4c7e-8374-340c1fe62aa2/4ac98e2f-3d99-47bd-8675-2d61b96d94f3/logos/4e4d6bde-13cd-4174-8dd9-679d5ed341b6/d705a260-e47c-486e-b446-0a6975cb3668/c6af21f3-437b-455b-8424-7a90a3e8df47/NXP_logo_RGB_web.png",
       "sites": null,
-      "reports": []
+      "logoW": 240,
+      "reports": [
+        {
+          "title": "Report - NXP Change Expansion Valve CH-A5",
+          "date": "2026-08-13",
+          "type": "",
+          "url": "https://mcenergyevo-my.sharepoint.com/:b:/g/personal/faiso_mcenergy-evo_com1/IQADTXTN_VZlTa1hv0_-3jtnAd6FC2lcqFS0EJfKZBUmmHc?e=7yfyDi",
+          "filename": "",
+          "site": ""
+        },
+        {
+          "title": "Report - NXP Change Fan Cooling Tower CT10#2",
+          "date": "2026-08-13",
+          "type": "",
+          "url": "https://mcenergyevo-my.sharepoint.com/:b:/g/personal/faiso_mcenergy-evo_com1/IQBSpzqVNJQVTJHsQGTtyzmIAZxxcuMbfBhwJpnDJ4_cU7I?e=wA4aeo",
+          "filename": "",
+          "site": ""
+        }
+      ]
     },
     {
       "name": "PEPSI",
@@ -456,8 +501,9 @@
       "phone": "",
       "address": "",
       "note": "",
-      "logo": "",
+      "logo": "https://ifdalivestorage.blob.core.windows.net/user-uploads/profile/4976/00000000-0000-0000-0000-000000000000/logo_63779bae190fdc29984ca66f621f63cb554fd132.png",
       "sites": null,
+      "logoW": 216,
       "reports": []
     },
     {
@@ -540,9 +586,19 @@
       "phone": "",
       "address": "",
       "note": "",
-      "logo": "",
+      "logo": "https://www.supalai.com/images/officeBuilding/logo_2.png",
       "sites": null,
-      "reports": []
+      "logoW": 240,
+      "reports": [
+        {
+          "title": "Report - SPL Change Magnatic CDP-1",
+          "date": "2026-08-13",
+          "type": "Repair",
+          "url": "https://mcenergyevo-my.sharepoint.com/:b:/g/personal/faiso_mcenergy-evo_com1/IQDaQ6f0H45NTZUnBvNo_g-ZAWZ26ycibCml7umBMG79JEI?e=2RLY7w",
+          "filename": "",
+          "site": ""
+        }
+      ]
     },
     {
       "name": "SYNNEX",
@@ -552,8 +608,9 @@
       "phone": "",
       "address": "",
       "note": "",
-      "logo": "",
+      "logo": "https://yt3.googleusercontent.com/wQT0O9iSYbfNLG5z7-F9fYepi-OOzylbXJ2kLFSUU3l3XYgMLXcgxA9CQv_IXoYNomkgWzM8zvw=s900-c-k-c0x00ffffff-no-rj",
       "sites": null,
+      "logoW": 240,
       "reports": []
     },
     {
@@ -564,8 +621,9 @@
       "phone": "",
       "address": "",
       "note": "",
-      "logo": "",
+      "logo": "https://d16lcjvfn270cj.cloudfront.net/uploads/2025/07/logo-brand.png",
       "sites": null,
+      "logoW": 152,
       "reports": []
     },
     {
