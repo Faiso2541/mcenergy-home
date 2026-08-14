@@ -101,7 +101,32 @@
   tbody tr:hover { background: #f2f6fa; cursor: pointer; }
   tbody tr.sel { background: #cfe0f0; }
   .scroll { max-height: 46vh; overflow: auto; border: 1px solid #ddd; }
-  .row-actions { display: flex; gap: 6px; align-items: center; }
+  .row-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+
+  /* ---------- ตารางรายงานบนมือถือ ----------
+     จอแคบเรียงเป็นตารางไม่ไหว ตัวหนังสือจะถูกบีบจนตกบรรทัดทีละคำ
+     และปุ่มจะดันจนล้นออกนอกกรอบ จึงเปลี่ยนแต่ละแถวเป็นการ์ดแทน */
+  @media (max-width: 640px) {
+    #repTable, #repTable tbody, #repTable tr, #repTable td { display: block; width: 100%; }
+    #repTable thead { display: none; }
+    #repTable { border-collapse: collapse; }
+    #repTable tr {
+      border: 1.5px solid #0d1b2a; border-radius: 10px;
+      padding: 12px 14px; margin-bottom: 10px; background: #fff;
+    }
+    #repTable td { border: 0 !important; padding: 3px 0; font-size: 14px; }
+    #repTable td.c-title { font-weight: 700; font-size: 16px; line-height: 1.35; margin-bottom: 4px; }
+    /* ป้ายชื่อคอลัมน์นำหน้าค่า เช่น  วันที่ 2026-08-15 */
+    #repTable td[data-label]::before {
+      content: attr(data-label) " ";
+      color: #667; font-weight: 700; margin-right: 6px;
+    }
+    #repTable td:empty { display: none; }
+    #repTable .row-actions { margin-top: 10px; gap: 8px; }
+    #repTable .row-actions .btn { flex: 1 1 auto; justify-content: center; }
+    /* ไม่ต้องเลื่อนแนวนอนอีก การ์ดกว้างเท่ากรอบพอดี */
+    .repmain .scroll { overflow-x: visible; }
+  }
   /* ไอคอน PDF หน้าปุ่มอ่าน/ดาวน์โหลด — บอกด้วยสายตาว่าแถวนี้มีไฟล์แนบ */
   .pdf-ico { flex: 0 0 auto; display: block; margin-right: 2px; }
   .pdf-none { flex: 0 0 auto; width: 26px; }
@@ -190,7 +215,7 @@
             <button class="btn sm" id="btnAddPdf">+ เพิ่ม PDF</button>
           </div>
           <div class="scroll">
-            <table>
+            <table id="repTable">
               <thead><tr><th>ชื่อรายงาน</th><th class="siteCol">ไซต์</th><th>วันที่</th><th>ประเภท</th><th style="width:180px"></th></tr></thead>
               <tbody id="repBody"></tbody>
             </table>
@@ -1228,9 +1253,11 @@ function renderReports() {
         '<button class="btn sm" data-dlrep="' + i + '">ดาวน์โหลด</button>'
       : '<span style="color:#999">ไม่มีไฟล์</span>';
     var delBtn = isMgr() ? '<button class="btn sm danger" data-delrep="' + i + '">ลบ</button>' : '';
-    return '<tr><td>' + esc(r.title) + '</td>' +
-      '<td class="siteCol"' + (sites ? '' : ' style="display:none"') + '>' + esc(r.site || '-') + '</td>' +
-      '<td>' + esc(r.date) + '</td><td>' + esc(r.type) + '</td>' +
+    /* data-label ใช้แสดงชื่อคอลัมน์กำกับหน้าค่า ตอนจอแคบที่ซ่อนหัวตาราง */
+    return '<tr><td class="c-title">' + esc(r.title) + '</td>' +
+      '<td class="siteCol" data-label="ไซต์"' + (sites ? '' : ' style="display:none"') + '>' + esc(r.site || '-') + '</td>' +
+      '<td data-label="วันที่">' + esc(r.date) + '</td>' +
+      '<td data-label="ประเภท">' + esc(r.type || '-') + '</td>' +
       '<td><div class="row-actions">' + btns + delBtn + '</div></td></tr>';
   }).join('') || '<tr><td colspan="5" style="color:#777">ยังไม่มีรายงานในส่วนนี้</td></tr>';
 }
