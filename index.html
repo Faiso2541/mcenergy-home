@@ -685,25 +685,36 @@ var BOX_OFF =
     '<path d="M4 11h4l1.3 2.3h5.4L16 11h4v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7z" fill="#b91c1c"/>' +
   '</svg>';
 
-/* ข้อความละเอียด (จำนวนผู้ใช้/ลูกค้า/รายงาน) ย้ายไปอยู่ใน tooltip
-   เอาเมาส์ชี้ค้างไว้ก็ยังดูได้ ตอนหาสาเหตุเวลามีปัญหา */
-function setStatus(msg, bad) {
+/* ไฟสถานะดูจากการเชื่อมต่อฐานข้อมูลอย่างเดียว
+   ข้อความอื่น ๆ ระหว่างโหลดจะไปอยู่ใน tooltip ไม่ทำให้ไฟเปลี่ยนสี */
+var connState = 'wait';   /* wait | on | off */
+var connNote  = '';
+
+function paintConn() {
   var el = document.getElementById('seedStatus');
   if (!el) return;
-
-  var txt = String(msg == null ? '' : msg);
-  var waiting = /กำลัง/.test(txt);
-  var online = !bad && !waiting;
-  var cls = waiting ? 'conn-wait' : (online ? 'conn-on' : 'conn-off');
-  var label = waiting ? 'กำลังเชื่อมต่อ' : (online ? 'Online' : 'Offline');
-
+  var on = connState === 'on', wait = connState === 'wait';
   el.style.color = '';
   el.innerHTML =
-    '<span class="conn ' + cls + '" title="' + esc(txt) + '">' +
-      (online ? BOX_ON : BOX_OFF) +
+    '<span class="conn ' + (wait ? 'conn-wait' : (on ? 'conn-on' : 'conn-off')) +
+      '" title="' + esc(connNote) + '">' +
+      (on ? BOX_ON : BOX_OFF) +
       '<span class="conn-dot"></span>' +
-      '<span>' + label + '</span>' +
+      '<span>' + (wait ? 'กำลังเชื่อมต่อ' : (on ? 'Online' : 'Offline')) + '</span>' +
     '</span>';
+}
+
+/* เรียกจากขั้นตอนเชื่อมต่อฐานข้อมูลเท่านั้น */
+function setConn(state, note) {
+  connState = state;
+  if (note != null) connNote = String(note);
+  paintConn();
+}
+
+/* ข้อความทั่วไป (data.json ฯลฯ) เก็บไว้ดูใน tooltip ไม่แตะไฟสถานะ */
+function setStatus(msg, bad) {
+  connNote = String(msg == null ? '' : msg);
+  paintConn();
 }
 function loadSeed() {
   setStatus('กำลังโหลดข้อมูลระบบ...');
@@ -883,7 +894,7 @@ function loadSheets() {
   var src = SHEET_SRC || localStorage.getItem('hcr_sheet') || '';
   var id = sheetId(src);
   if (!id) return Promise.resolve();
-  setStatus('กำลังโหลดข้อมูลจาก Google Sheet...');
+  setConn('wait', 'กำลังเชื่อมต่อฐานข้อมูล...');
 
   return jsonp(API_URL + '?data=1')
     .then(function (d) {
@@ -891,7 +902,7 @@ function loadSheets() {
       var uRows = (d && d.users) || null,
           cRows = (d && d.customers) || null,
           rRows = (d && d.reports) || null;
-      if (!uRows && !cRows && !rRows) { setStatus('เชื่อมต่อ Google Sheet ไม่ได้ — ตรวจสอบว่าแชร์เป็น "ทุกคนที่มีลิงก์"', true); return; }
+      if (!uRows && !cRows && !rRows) { setConn('off', 'ปลายทางไม่ส่งข้อมูลกลับมา'); return; }
       seeding = true;
 
       if (uRows && uRows.length) {
@@ -964,15 +975,17 @@ function loadSheets() {
       }
       var n = 0; customers.forEach(function (c) { n += (c.reports || []).length; });
       var warn = (rRows && rRows.length) ? '' : '  ** ไม่พบข้อมูลรายงาน **';
-      setStatus('ข้อมูลจาก Google Sheet: ' + users.length + ' ผู้ใช้ · ' + customers.length +
-                ' ลูกค้า · ' + n + ' รายงาน' + warn, !!warn);
+      setConn(warn ? 'off' : 'on',
+              'ข้อมูลจาก Google Sheet: ' + users.length + ' ผู้ใช้ · ' + customers.length +
+              ' ลูกค้า · ' + n + ' รายงาน' + warn);
     })
     .catch(function (err) {
-      setStatus('เชื่อมต่อฐานข้อมูลไม่ได้ - ' + (err && err.message ? err.message : '') +
-                ' (ตรวจว่า Apps Script เผยแพร่แบบ "ทุกคน" แล้ว)', true);
+      setConn('off', 'เชื่อมต่อฐานข้อมูลไม่ได้ - ' + (err && err.message ? err.message : '') +
+                     ' (ตรวจว่า Apps Script เผยแพร่แบบ "ทุกคน" แล้ว)');
     });
 }
 
+paintConn();
 loadSeed().then(loadManifest).then(loadSheets).then(restoreSession);
 
 /* ================= HELPERS ================= */
