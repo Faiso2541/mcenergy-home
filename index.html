@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -732,17 +733,54 @@ var TAB_ALIASES = {
 };
 var tabUsed = {};
 
+/* คอลัมน์ที่ต้องมีจริง ๆ ถึงจะนับว่าอ่านแท็บถูกตัว
+   เวลา Google หาแท็บไม่เจอ มันตอบหน้า error กลับมา ซึ่งแยกเป็นตารางแล้ว
+   ได้ 1 แถวเหมือนกัน ถ้าเช็คแค่จำนวนแถวจะหลงคิดว่าสำเร็จ */
+var TAB_KEYS = { Users: 'username', Customers: 'name', Reports: 'customer' };
+
+/* ทางออกสำรอง: ถ้าชื่อแท็บแปลกจนไล่ไม่เจอ ให้ใส่เลข gid ตรงนี้แทน
+   หาเลขได้จาก URL ตอนเปิดแท็บนั้นอยู่ ท้ายลิงก์จะมี #gid=123456789 */
+var TAB_GID = { Users: '', Customers: '', Reports: '1533865286' };
+
+function gidUrl(id, gid) {
+  return 'https://docs.google.com/spreadsheets/d/' + id +
+         '/gviz/tq?tqx=out:csv&gid=' + encodeURIComponent(gid) + '&t=' + Date.now();
+}
+
+function fetchGid(id, gid) {
+  return fetch(gidUrl(id, gid), { cache: 'no-store' })
+    .then(function (r) { if (!r.ok) throw new Error('gid HTTP ' + r.status); return r.text(); })
+    .then(function (t) { return parseCSV(t); })
+    .catch(function () { return null; });
+}
+
+function looksRight(rows, key) {
+  return !!(rows && rows.length && rows[0] && rows[0].hasOwnProperty(TAB_KEYS[key]));
+}
+
 function fetchTabAny(id, key) {
   var names = TAB_ALIASES[key] || [key], i = 0;
-  function tryNext() {
+
+  /* ไล่ลองทีละชื่อ ต้องมีคอลัมน์หลักจริง ๆ ถึงจะยอมรับ ไม่ใช่แค่มีแถว */
+  function tryNames() {
     if (i >= names.length) { tabUsed[key] = null; return Promise.resolve(null); }
     var nm = names[i++];
     return fetchTab(id, nm).then(function (rows) {
-      if (rows && rows.length) { tabUsed[key] = nm; return rows; }
-      return tryNext();
+      if (looksRight(rows, key)) { tabUsed[key] = nm; return rows; }
+      return tryNames();
     });
   }
-  return tryNext();
+
+  /* ถ้ากรอก gid ไว้ ใช้ทางนี้ก่อน เพราะ gid ไม่เปลี่ยนตามชื่อแท็บ
+     ถ้าเลขผิดหรือแท็บถูกลบ ค่อยถอยไปไล่ตามชื่อ */
+  var g = TAB_GID[key];
+  if (g) {
+    return fetchGid(id, g).then(function (rows) {
+      if (looksRight(rows, key)) { tabUsed[key] = 'gid ' + g; return rows; }
+      return tryNames();
+    });
+  }
+  return tryNames();
 }
 
 function loadSheets() {
