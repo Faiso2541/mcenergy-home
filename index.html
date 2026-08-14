@@ -103,6 +103,18 @@
   .scroll { max-height: 46vh; overflow: auto; border: 1px solid #ddd; }
   .row-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 
+  /* ---------- ไฟสถานะการเชื่อมต่อใต้กล่องล็อกอิน ---------- */
+  .conn { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 700; letter-spacing: .3px; }
+  .conn svg { display: block; flex: 0 0 auto; }
+  .conn-dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
+  .conn-on  { color: #15803d; }
+  .conn-on  .conn-dot { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,.20); }
+  .conn-off { color: #b91c1c; }
+  .conn-off .conn-dot { background: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.20); }
+  .conn-wait { color: #6b7280; }
+  .conn-wait .conn-dot { background: #9ca3af; animation: connBlink 1s ease-in-out infinite; }
+  @keyframes connBlink { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+
   /* ---------- ตารางรายงานบนมือถือ ----------
      จอแคบเรียงเป็นตารางไม่ไหว ตัวหนังสือจะถูกบีบจนตกบรรทัดทีละคำ
      และปุ่มจะดันจนล้นออกนอกกรอบ จึงเปลี่ยนแต่ละแถวเป็นการ์ดแทน */
@@ -659,9 +671,39 @@ var editUserIdx = -1, editCustIdx = -1, editRep = null;
    localStorage แยกกันคนละเครื่อง/คนละโดเมน สิ่งที่แก้ในเครื่องจึงไม่ตามขึ้นเว็บ
    ให้ Admin กด "ส่งออก data.json" แล้วอัปโหลดไฟล์ขึ้นเว็บคู่กับ index.html  */
 var LS_SEED = 'hcr_seed_version', LS_DIRTY = 'hcr_dirty';
+/* กล่องจดหมายมีจดหมายหล่นลงมา = ต่อฐานข้อมูลได้ / กล่องเปล่า = ต่อไม่ได้ */
+var BOX_ON =
+  '<svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true">' +
+    '<path d="M4 11h4l1.3 2.3h5.4L16 11h4v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7z" fill="#15803d"/>' +
+    '<rect x="7.4" y="2.4" width="9.2" height="6.6" rx="1.2" fill="#22c55e"/>' +
+    '<path d="M8.4 3.6l3.6 2.5 3.6-2.5" fill="none" stroke="#fff" stroke-width="1.3" ' +
+      'stroke-linecap="round" stroke-linejoin="round"/>' +
+  '</svg>';
+
+var BOX_OFF =
+  '<svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true">' +
+    '<path d="M4 11h4l1.3 2.3h5.4L16 11h4v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7z" fill="#b91c1c"/>' +
+  '</svg>';
+
+/* ข้อความละเอียด (จำนวนผู้ใช้/ลูกค้า/รายงาน) ย้ายไปอยู่ใน tooltip
+   เอาเมาส์ชี้ค้างไว้ก็ยังดูได้ ตอนหาสาเหตุเวลามีปัญหา */
 function setStatus(msg, bad) {
   var el = document.getElementById('seedStatus');
-  if (el) { el.textContent = msg; el.style.color = bad ? '#b3261e' : '#667'; }
+  if (!el) return;
+
+  var txt = String(msg == null ? '' : msg);
+  var waiting = /กำลัง/.test(txt);
+  var online = !bad && !waiting;
+  var cls = waiting ? 'conn-wait' : (online ? 'conn-on' : 'conn-off');
+  var label = waiting ? 'กำลังเชื่อมต่อ' : (online ? 'Online' : 'Offline');
+
+  el.style.color = '';
+  el.innerHTML =
+    '<span class="conn ' + cls + '" title="' + esc(txt) + '">' +
+      (online ? BOX_ON : BOX_OFF) +
+      '<span class="conn-dot"></span>' +
+      '<span>' + label + '</span>' +
+    '</span>';
 }
 function loadSeed() {
   setStatus('กำลังโหลดข้อมูลระบบ...');
