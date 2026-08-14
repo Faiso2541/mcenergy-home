@@ -783,15 +783,47 @@ function fetchTabAny(id, key) {
   return tryNames();
 }
 
+/* ============================================================
+   ดึงข้อมูลผ่าน Apps Script แทนการอ่านชีตตรง ๆ
+   สคริปต์ฝั่งนั้นอ่านชีตด้วยสิทธิ์เจ้าของ จึงไม่ต้องพึ่งชื่อแท็บ
+   ไม่ต้องแชร์ชีตสาธารณะ และไม่เจอปัญหา gviz อีก
+   ใช้ JSONP (แปะแท็ก script) เพราะไม่ติดข้อจำกัด CORS
+   ============================================================ */
+var API_URL = 'https://script.google.com/macros/s/AKfycbz1aedRo-FNsubFpitC515Z2L4Tztwom95RK02bDvQsik2RSURuN8n8Pr3UzXm6MFb2sA/exec';
+
+function jsonp(url, ms) {
+  return new Promise(function (resolve, reject) {
+    var cb = 'hcr_cb_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
+    var sc = document.createElement('script');
+    var done = false;
+    var timer = setTimeout(function () {
+      if (done) return; done = true; cleanup(); reject(new Error('หมดเวลารอ'));
+    }, ms || 20000);
+
+    function cleanup() {
+      clearTimeout(timer);
+      try { delete window[cb]; } catch (e) { window[cb] = undefined; }
+      if (sc.parentNode) sc.parentNode.removeChild(sc);
+    }
+    window[cb] = function (data) { if (done) return; done = true; cleanup(); resolve(data); };
+    sc.onerror = function () { if (done) return; done = true; cleanup(); reject(new Error('เรียกปลายทางไม่สำเร็จ')); };
+    sc.src = url + (url.indexOf('?') > -1 ? '&' : '?') + 'callback=' + cb + '&t=' + Date.now();
+    document.head.appendChild(sc);
+  });
+}
+
 function loadSheets() {
   var src = SHEET_SRC || localStorage.getItem('hcr_sheet') || '';
   var id = sheetId(src);
   if (!id) return Promise.resolve();
   setStatus('กำลังโหลดข้อมูลจาก Google Sheet...');
 
-  return Promise.all([fetchTabAny(id, 'Users'), fetchTabAny(id, 'Customers'), fetchTabAny(id, 'Reports')])
-    .then(function (res) {
-      var uRows = res[0], cRows = res[1], rRows = res[2];
+  return jsonp(API_URL + '?data=1')
+    .then(function (d) {
+      if (d && d.ok === false) throw new Error(d.error || 'ปลายทางแจ้งข้อผิดพลาด');
+      var uRows = (d && d.users) || null,
+          cRows = (d && d.customers) || null,
+          rRows = (d && d.reports) || null;
       if (!uRows && !cRows && !rRows) { setStatus('เชื่อมต่อ Google Sheet ไม่ได้ — ตรวจสอบว่าแชร์เป็น "ทุกคนที่มีลิงก์"', true); return; }
       seeding = true;
 
@@ -864,9 +896,13 @@ function loadSheets() {
         if (fresh) { activeCust = fresh; renderSiteTabs(); renderReports(); }
       }
       var n = 0; customers.forEach(function (c) { n += (c.reports || []).length; });
-      var warn = !tabUsed.Reports ? '  ** อ่านแท็บรายงานไม่เจอ - ตรวจชื่อแท็บในชีต **' : '';
+      var warn = (rRows && rRows.length) ? '' : '  ** ไม่พบข้อมูลรายงาน **';
       setStatus('ข้อมูลจาก Google Sheet: ' + users.length + ' ผู้ใช้ · ' + customers.length +
                 ' ลูกค้า · ' + n + ' รายงาน' + warn, !!warn);
+    })
+    .catch(function (err) {
+      setStatus('เชื่อมต่อฐานข้อมูลไม่ได้ - ' + (err && err.message ? err.message : '') +
+                ' (ตรวจว่า Apps Script เผยแพร่แบบ "ทุกคน" แล้ว)', true);
     });
 }
 
