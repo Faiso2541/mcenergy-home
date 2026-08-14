@@ -101,7 +101,9 @@
   tbody tr:hover { background: #f2f6fa; cursor: pointer; }
   tbody tr.sel { background: #cfe0f0; }
   .scroll { max-height: 46vh; overflow: auto; border: 1px solid #ddd; }
-  .row-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .row-actions { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap;
+                 justify-content: flex-end; }
+  .row-actions .btn { white-space: nowrap; }
 
   /* ---------- ไฟสถานะการเชื่อมต่อใต้กล่องล็อกอิน ---------- */
   .conn { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 700; letter-spacing: .3px; }
@@ -134,7 +136,7 @@
       color: #667; font-weight: 700; margin-right: 6px;
     }
     #repTable td:empty { display: none; }
-    #repTable .row-actions { margin-top: 10px; gap: 8px; }
+    #repTable .row-actions { margin-top: 10px; gap: 8px; flex-wrap: wrap; justify-content: flex-start; }
     #repTable .row-actions .btn { flex: 1 1 auto; justify-content: center; }
     /* ไม่ต้องเลื่อนแนวนอนอีก การ์ดกว้างเท่ากรอบพอดี */
     .repmain .scroll { overflow-x: visible; }
@@ -228,7 +230,7 @@
           </div>
           <div class="scroll">
             <table id="repTable">
-              <thead><tr><th>ชื่อรายงาน</th><th class="siteCol">ไซต์</th><th>วันที่</th><th>ประเภท</th><th style="width:180px"></th></tr></thead>
+              <thead><tr><th>ชื่อรายงาน</th><th class="siteCol">ไซต์</th><th>วันที่</th><th>ประเภท</th><th style="width:250px"></th></tr></thead>
               <tbody id="repBody"></tbody>
             </table>
           </div>
