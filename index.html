@@ -105,6 +105,27 @@
                  justify-content: flex-end; }
   .row-actions .btn { white-space: nowrap; }
 
+  /* ---------- ทะเบียนอุปกรณ์ ---------- */
+  .eq-sum { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .eq-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px;
+             border: 1.5px solid #0d1b2a; border-radius: 999px; font-size: 13px; font-weight: 700; }
+  .eq-chip b { font-weight: 700; }
+  .eq-chip .n { background: #0d1b2a; color: #fff; border-radius: 999px;
+                padding: 0 7px; font-size: 12px; line-height: 18px; }
+  .eq-badge { display: inline-block; padding: 3px 10px; border-radius: 999px;
+              font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+  .eq-ok   { background: #dcfce7; color: #15803d; }
+  .eq-warn { background: #fef3c7; color: #92400e; }
+  .eq-wait { background: #dbeafe; color: #1e40af; }
+  .eq-bad  { background: #fee2e2; color: #b91c1c; }
+  .eq-rep  { background: #ede9fe; color: #5b21b6; }
+  .eq-none { background: #f1f5f9; color: #475569; }
+  .eq-detail td { background: #f8fafc; font-size: 13px; color: #334155; padding: 10px 12px; }
+  .eq-detail dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+                  gap: 6px 18px; margin: 0; }
+  .eq-detail dt { font-weight: 700; color: #64748b; font-size: 12px; }
+  .eq-detail dd { margin: 0 0 6px; }
+
   /* ---------- ไฟสถานะการเชื่อมต่อใต้กล่องล็อกอิน ---------- */
   .conn { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 700; letter-spacing: .3px; }
   .conn svg { display: block; flex: 0 0 auto; }
@@ -137,6 +158,16 @@
     }
     #repTable td:empty { display: none; }
     #repTable .row-actions { margin-top: 10px; gap: 8px; flex-wrap: wrap; justify-content: flex-start; }
+    #eqTable, #eqTable tbody, #eqTable tr, #eqTable td { display: block; width: 100%; }
+    #eqTable thead { display: none; }
+    #eqTable tr { border: 1.5px solid #0d1b2a; border-radius: 10px;
+                  padding: 12px 14px; margin-bottom: 10px; background: #fff; }
+    #eqTable tr.eq-detail { border-top: 0; border-radius: 0 0 10px 10px; margin-top: -12px; }
+    #eqTable td { border: 0 !important; padding: 3px 0; font-size: 14px; }
+    #eqTable td[data-label]::before { content: attr(data-label) " ";
+                                      color: #667; font-weight: 700; margin-right: 6px; }
+    #eqTable td.c-title { font-weight: 700; font-size: 16px; }
+    #eqTable td:empty { display: none; }
     #repTable .row-actions .btn { flex: 1 1 auto; justify-content: center; }
     /* ไม่ต้องเลื่อนแนวนอนอีก การ์ดกว้างเท่ากรอบพอดี */
     .repmain .scroll { overflow-x: visible; }
@@ -219,6 +250,23 @@
       <h2 id="custTitle">ข้อมูลลูกค้า</h2>
       <div id="custDetail" class="empty">กรุณาเลือก Customer และยืนยันรหัสเข้าถึง</div>
     </div>
+    <div class="panel" id="equipPanel" style="display:none">
+      <h2>อุปกรณ์ในไซต์</h2>
+      <div id="equipSummary" class="eq-sum"></div>
+      <div class="toolbar">
+        <input type="search" id="equipSearch" placeholder="ค้นหาอุปกรณ์ — ประเภท ยี่ห้อ รุ่น ซีเรียล Tag">
+      </div>
+      <div class="scroll">
+        <table id="eqTable">
+          <thead><tr>
+            <th>ประเภท</th><th>Tag</th><th>ยี่ห้อ / รุ่น</th>
+            <th>ซีเรียล</th><th>จำนวน</th><th>สถานะ</th><th style="width:90px"></th>
+          </tr></thead>
+          <tbody id="equipBody"></tbody>
+        </table>
+      </div>
+    </div>
+
     <div class="panel" id="reportPanel" style="display:none">
       <h2>รายงาน (PDF)</h2>
       <div class="repwrap">
@@ -968,12 +1016,32 @@ function loadSheets() {
         save(LS_CUST, customers);
       }
 
+      /* ---- ทะเบียนอุปกรณ์ ผูกเข้ากับลูกค้าแบบเดียวกับรายงาน ---- */
+      customers.forEach(function (c) { c.equip = []; });
+      var eRows = (d && d.equipment) || null;
+      if (eRows && eRows.length) {
+        eRows.forEach(function (r) {
+          var cn = String(r.customer || '').trim(); if (!cn) return;
+          var c = customers.find(function (x) { return x.name.toLowerCase() === cn.toLowerCase(); });
+          if (!c) return;                       /* ไม่สร้างลูกค้าใหม่จากแท็บอุปกรณ์ */
+          if (!c.equip) c.equip = [];
+          c.equip.push({
+            site: r.site || '', type: r.type || '', tag: r.tag || '',
+            brand: r.brand || '', model: r.model || '', serial: r.serial || '',
+            capacity: r.capacity || '', qty: r.qty || '', location: r.location || '',
+            status: r.status || '', installed: r.installed || '',
+            lastservice: r.lastservice || '', note: r.note || ''
+          });
+        });
+        save(LS_CUST, customers);
+      }
+
       seeding = false;
       localStorage.removeItem(LS_DIRTY); dataDirty = false; updateDirtyBanner();
       renderUsers(); renderCustMgmt(); renderRepMgmt(); fillCustSelect(); renderPick();
       if (activeCust) {
         var fresh = customers.find(function (x) { return x.name.toLowerCase() === activeCust.name.toLowerCase(); });
-        if (fresh) { activeCust = fresh; renderSiteTabs(); renderReports(); }
+        if (fresh) { activeCust = fresh; renderSiteTabs(); renderReports(); renderEquip(); }
       }
       var n = 0; customers.forEach(function (c) { n += (c.reports || []).length; });
       var warn = (rRows && rRows.length) ? '' : '  ** ไม่พบข้อมูลรายงาน **';
@@ -1090,6 +1158,7 @@ function resetCustomerPanel() {
   $('custTitle').textContent = 'ข้อมูลลูกค้า';
   $('custDetail').className = 'empty'; $('custDetail').textContent = 'กรุณาเลือก Customer และยืนยันรหัสเข้าถึง';
   $('reportPanel').style.display = 'none';
+  if ($('equipPanel')) $('equipPanel').style.display = 'none';
 }
 
 /* ================= PICK CUSTOMER ================= */
@@ -1208,6 +1277,7 @@ function grantAccess(cust, byAdmin, silent) {
   '</div>';
   if (mgr && $('btnSetLogo')) $('btnSetLogo').addEventListener('click', openLogoDialog);
   $('reportPanel').style.display = '';
+  renderEquip();
   $('btnAddPdf').style.display = isMgr() ? '' : 'none';
   $('btnAddPdf').textContent = sheetLinked() ? 'เพิ่มรายงานในชีต' : '+ เพิ่ม PDF';
   $('repSearch').value = '';
@@ -1279,7 +1349,7 @@ function renderSiteTabs() {
 $('siteTabs').addEventListener('click', function (e) {
   var b = e.target.closest('.tab'); if (!b) return;
   activeSite = b.dataset.site || '';
-  renderSiteTabs(); renderReports(); saveSession();
+  renderSiteTabs(); renderReports(); renderEquip(); saveSession();
 });
 
 /* ไอคอน PDF วาดด้วย SVG ในไฟล์เลย ไม่ต้องโหลดรูปจากที่อื่น
@@ -1291,6 +1361,96 @@ var PDF_ICON =
     '<text x="12.2" y="18.2" font-family="Arial,Helvetica,sans-serif" font-size="7.2"' +
     ' font-weight="bold" fill="#ffffff" text-anchor="middle">PDF</text>' +
   '</svg>';
+
+/* ---------- ทะเบียนอุปกรณ์ (อ่านอย่างเดียว แก้ที่ Google Sheet) ---------- */
+var EQ_STATUS = [
+  { re: /ปกติ|normal|ok|good/i,            cls: 'eq-ok'   },
+  { re: /เฝ้าระวัง|watch|monitor/i,          cls: 'eq-warn' },
+  { re: /รอซ่อม|รอ|pending|wait|repair/i,   cls: 'eq-wait' },
+  { re: /ชำรุด|เสีย|faul|broken|down/i,     cls: 'eq-bad'  },
+  { re: /เปลี่ยน|replace/i,                 cls: 'eq-rep'  }
+];
+
+function eqClass(st) {
+  var t = String(st || '').trim();
+  if (!t) return 'eq-none';
+  for (var i = 0; i < EQ_STATUS.length; i++) if (EQ_STATUS[i].re.test(t)) return EQ_STATUS[i].cls;
+  return 'eq-none';
+}
+
+/* อุปกรณ์ของลูกค้าที่กำลังเปิดอยู่ กรองตามไซต์ที่เลือกและคำค้นหา */
+function equipList() {
+  if (!activeCust || !activeCust.equip) return [];
+  var q = ($('equipSearch') ? $('equipSearch').value : '').trim().toLowerCase();
+  return activeCust.equip.filter(function (e) {
+    if (activeSite && (e.site || '') !== activeSite) return false;
+    if (!q) return true;
+    return [e.type, e.tag, e.brand, e.model, e.serial, e.location, e.status, e.note]
+             .join(' ').toLowerCase().indexOf(q) > -1;
+  });
+}
+
+function renderEquip() {
+  var panel = $('equipPanel');
+  if (!panel || !activeCust) return;
+
+  var all = activeCust.equip || [];
+  /* ไม่มีข้อมูลอุปกรณ์เลยก็ซ่อนการ์ดไปทั้งใบ ไม่ให้หน้าเว็บรก */
+  if (!all.length) { panel.style.display = 'none'; return; }
+  panel.style.display = '';
+
+  var list = equipList();
+
+  /* แถบสรุปจำนวนตามประเภท - ตอบคำถาม "chiller มีกี่ตัว" ได้ทันที */
+  var byType = {}, order = [];
+  list.forEach(function (e) {
+    var t = (e.type || 'ไม่ระบุประเภท').trim();
+    if (!byType[t]) { byType[t] = 0; order.push(t); }
+    byType[t] += Math.max(parseInt(e.qty, 10) || 1, 1);
+  });
+  $('equipSummary').innerHTML = order.map(function (t) {
+    return '<span class="eq-chip"><b>' + esc(t) + '</b><span class="n">' + byType[t] + '</span></span>';
+  }).join('') || '';
+
+  $('equipBody').innerHTML = list.map(function (e, i) {
+    var brandModel = [e.brand, e.model].filter(Boolean).join(' ') || '-';
+    var extra = [
+      ['ขนาด', e.capacity], ['ตำแหน่งติดตั้ง', e.location],
+      ['วันที่ติดตั้ง', e.installed], ['บริการล่าสุด', e.lastservice],
+      ['ไซต์', e.site], ['หมายเหตุ / ปัญหาที่พบ', e.note]
+    ].filter(function (x) { return String(x[1] || '').trim(); });
+
+    var row =
+      '<tr data-eq="' + i + '">' +
+        '<td class="c-title" data-label="ประเภท">' + esc(e.type || '-') + '</td>' +
+        '<td data-label="Tag">' + esc(e.tag || '-') + '</td>' +
+        '<td data-label="ยี่ห้อ / รุ่น">' + esc(brandModel) + '</td>' +
+        '<td data-label="ซีเรียล">' + esc(e.serial || '-') + '</td>' +
+        '<td data-label="จำนวน">' + esc(e.qty || '1') + '</td>' +
+        '<td data-label="สถานะ"><span class="eq-badge ' + eqClass(e.status) + '">' +
+          esc(e.status || 'ไม่ระบุ') + '</span></td>' +
+        '<td>' + (extra.length ? '<button class="btn sm ghost" data-eqmore="' + i + '">รายละเอียด</button>' : '') + '</td>' +
+      '</tr>';
+
+    var detail = extra.length
+      ? '<tr class="eq-detail" data-eqdetail="' + i + '" style="display:none"><td colspan="7"><dl>' +
+          extra.map(function (x) { return '<dt>' + esc(x[0]) + '</dt><dd>' + esc(x[1]) + '</dd>'; }).join('') +
+        '</dl></td></tr>'
+      : '';
+
+    return row + detail;
+  }).join('') || '<tr><td colspan="7" style="color:#777">ไม่พบอุปกรณ์ที่ตรงกับคำค้นหา</td></tr>';
+}
+
+if ($('equipSearch')) $('equipSearch').addEventListener('input', renderEquip);
+if ($('equipBody')) $('equipBody').addEventListener('click', function (ev) {
+  var b = ev.target.closest('button'); if (!b || b.dataset.eqmore == null) return;
+  var row = document.querySelector('[data-eqdetail="' + b.dataset.eqmore + '"]');
+  if (!row) return;
+  var open = row.style.display !== 'none';
+  row.style.display = open ? 'none' : '';
+  b.textContent = open ? 'รายละเอียด' : 'ซ่อน';
+});
 
 function renderReports() {
   if (!activeCust) return;
@@ -1505,7 +1665,7 @@ function commitPdf(rec) {
   }
   logEvent('file', 'เพิ่มรายงาน "' + rec.title + '" ให้ ' + activeCust.name + (rec.site ? ' / ' + rec.site : ''));
   closeM('addPdfOverlay');
-  renderSiteTabs(); renderReports(); renderCustMgmt(); renderRepMgmt(); renderPick();
+  renderSiteTabs(); renderReports(); renderEquip(); renderCustMgmt(); renderRepMgmt(); renderPick();
 }
 
 /* ================= PROFILE / รูปประจำตัว ================= */
