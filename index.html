@@ -49,7 +49,7 @@
   .msg { text-align: right; color: #b3261e; font-size: 13px; margin-top: 6px; min-height: 18px; }
 
   /* ---------- APP ---------- */
-  #appView { display: none; min-height: 100%; flex-direction: column; }
+  #appView { display: none; min-height: 100vh; flex-direction: column; }
   .topbar { background: #0d1b2a; color: #fff; display: flex; align-items: center; gap: 12px; padding: 12px 20px; flex-wrap: wrap; }
   .topbar .brand { font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
   .topbar .spacer { flex: 1; }
@@ -65,19 +65,23 @@
   .avbig { width: 84px; height: 84px; border-radius: 50%; border: 2px solid #0d1b2a; object-fit: cover; }
   .topbar .btn { background: #fff; color: #0d1b2a; }
   .topbar .btn:hover { background: #d8dde3; }
-  main { padding: 24px clamp(16px, 4vw, 48px); }
-  .panel { background: #fff; border: 2px solid #0d1b2a; border-radius: 12px; padding: 20px 22px; max-width: 1150px; margin-bottom: 20px; }
-  .panel h2 { margin: 0 0 12px; font-size: 22px; text-transform: uppercase; }
-  .custgrid { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,1fr) 260px; gap: 24px; align-items: start; }
-  .fieldlbl { font-weight: 700; text-transform: uppercase; font-size: 13px; margin-bottom: 6px; }
-  .addrbox { font-size: 16px; line-height: 1.7; white-space: pre-wrap; }
+  /* เต็มจอ: แถบซ้ายชิดขอบซ้าย เนื้อหากินความกว้างที่เหลือทั้งหมด
+     ระยะห่างย้ายไปอยู่ใน .content แทน */
+  main { padding: 0; }
+  .panel { background: #fff; border: 1.5px solid #0d1b2a; border-radius: 10px; padding: 12px 14px;
+           margin-bottom: 0; }   /* ระยะห่างคุมด้วย gap ของ .content */
+  .panel h2 { margin: 0 0 8px; font-size: 15px; text-transform: uppercase; }
+  /* เดิมมี 3 ช่อง (ข้อมูล / ที่อยู่ / โลโก้) พอย้ายโลโก้ไปแถบซ้ายแล้วเหลือ 2 */
+  .custgrid { display: grid; grid-template-columns: minmax(0,1.15fr) minmax(0,1fr); gap: 24px; align-items: start; }
+  .fieldlbl { font-weight: 700; text-transform: uppercase; font-size: 11px; margin-bottom: 3px; }
+  .addrbox { font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
   .logobox { border: 1.5px dashed #c3c8cf; border-radius: 8px; min-height: 130px; display: flex; align-items: center; justify-content: center; padding: 10px; background: #fafbfc; }
   .logobox img { max-width: 100%; height: auto; object-fit: contain; display: block; }
   .logobox.filled { border: 0; background: transparent; padding: 0; min-height: 0; }
   .logoactions { display: flex; gap: 8px; margin-top: 8px; justify-content: flex-end; }
   @media (max-width: 900px) { .custgrid { grid-template-columns: 1fr; } }
-  .kv { display: grid; grid-template-columns: 170px 1fr; gap: 8px 16px; font-size: 16px; }
-  .kv div:nth-child(odd) { font-weight: 700; text-transform: uppercase; font-size: 13px; padding-top: 3px; }
+  .kv { display: grid; grid-template-columns: 110px 1fr; gap: 3px 12px; font-size: 13px; }
+  .kv div:nth-child(odd) { font-weight: 700; text-transform: uppercase; font-size: 11px; padding-top: 1px; }
   .empty { color: #777; font-size: 16px; }
 
   /* ---------- MODAL ---------- */
@@ -105,8 +109,70 @@
                  justify-content: flex-end; }
   .row-actions .btn { white-space: nowrap; }
 
+  /* ---------- โครงหน้า: แถบเมนูซ้าย ---------- */
+  .layout { display: flex; gap: 0; align-items: stretch; flex: 1; }
+  .content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px; padding: 10px 12px; }
+
+  /* แถบซ้ายพื้นเข้มเต็มความสูง แยกโซนนำทางออกจากเนื้อหาชัดเจน */
+  .sidebar { width: 152px; flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px;
+             background: #0d1b2a; padding: 10px 9px; }
+  .sidebar .grp { font-size: 11px; color: #8d99ac; letter-spacing: .6px; padding: 0 2px; margin-top: 6px; }
+  .sidelogo { background: #fff; border-radius: 7px; padding: 7px;
+              display: flex; align-items: center; justify-content: center; min-height: 56px; }
+  .sidelogo img { max-width: 100%; height: auto; display: block; }
+  .sidelogo.empty-logo { border: 1.5px dashed #46536a; background: transparent;
+                         color: #8d99ac; font-size: 11px; min-height: 46px; }
+  .sidebar .logoactions { justify-content: stretch; margin-top: 6px; }
+  .sidebar .logoactions .btn { flex: 1; justify-content: center; background: transparent;
+                               color: #dbe3ef; border-color: #46536a; }
+  .sidebar .logoactions .btn:hover { background: #1b2a3f; }
+  /* ปุ่มไซต์บนพื้นเข้ม */
+  .sidebar .tabs.vert { flex: none; width: 100%; }
+  .sidebar .tab { background: transparent; color: #dbe3ef; border-color: #46536a; }
+  .sidebar .tab:hover { background: #1b2a3f; }
+  .sidebar .tab.active { background: #fff; color: #0d1b2a; border-color: #fff; }
+
+  /* ---------- ช่องสรุปด้านบน ---------- */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+  .stat { border-radius: 7px; padding: 7px 11px; border: 1.5px solid #0d1b2a; }
+  .stat .v { font-family: 'Roboto Condensed', sans-serif; font-size: 19px; font-weight: 700; line-height: 1.05; }
+  .stat .l { font-size: 10.5px; font-weight: 700; margin-top: 1px; opacity: .82; }
+  .stat.dark { background: #0d1b2a; color: #fff; }
+  .stat.ok   { background: #15803d; border-color: #15803d; color: #fff; }
+  .stat.warn { background: #b45309; border-color: #b45309; color: #fff; }
+  .stat.bad  { background: #b91c1c; border-color: #b91c1c; color: #fff; }
+
+  /* รายงานกับอุปกรณ์วางคู่กัน รายงานกว้างกว่าเพราะชื่อเรื่องยาว */
+  .split { display: grid; grid-template-columns: minmax(0,1.55fr) minmax(0,1fr); gap: 10px; align-items: start; }
+  /* ไม่มีการ์ดอุปกรณ์ รายงานขยายเต็มแถวเอง */
+  .split:has(#equipPanel[style*="none"]) { grid-template-columns: 1fr; }
+  @media (max-width: 1100px) { .split { grid-template-columns: 1fr; } }
+  /* ช่องอุปกรณ์แคบ ซ่อนคอลัมน์รองไว้ ดูได้ในปุ่มรายละเอียด */
+  .split #eqTable th:nth-child(3), .split #eqTable td:nth-child(3),
+  .split #eqTable th:nth-child(4), .split #eqTable td:nth-child(4),
+  .split #eqTable th:nth-child(5), .split #eqTable td:nth-child(5) { display: none; }
+  @media (max-width: 1100px) {
+    .split #eqTable th:nth-child(3), .split #eqTable td:nth-child(3),
+    .split #eqTable th:nth-child(4), .split #eqTable td:nth-child(4),
+    .split #eqTable th:nth-child(5), .split #eqTable td:nth-child(5) { display: table-cell; }
+  }
+
+  /* จอแคบ: แถบซ้ายพับขึ้นไปเป็นแถวปุ่มด้านบน */
+  @media (max-width: 820px) {
+    .layout { flex-direction: column; min-height: 0; }
+    .sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 10px 12px; }
+    .sidebar .grp { width: 100%; margin-top: 0; }
+    .sidebar #sideLogoWrap { display: flex; gap: 8px; align-items: center; width: 100%; }
+    .sidebar #sideLogoWrap .sidelogo { flex: 1; min-height: 52px; }
+    .sidebar .logoactions { margin-top: 0; width: auto; }
+    .sidebar .tabs.vert { flex-direction: row; flex-wrap: wrap; width: 100%; }
+    .content { padding: 12px; }
+  }
+
   /* ---------- ทะเบียนอุปกรณ์ ---------- */
   .eq-sum { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  /* เวลาที่รายงานเข้ามา แสดงใต้วันที่ตัวเล็ก ๆ */
+  .r-time { display: block; font-size: 11.5px; color: #7a828f; margin-top: 1px; }
   .eq-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px;
              border: 1.5px solid #0d1b2a; border-radius: 999px; font-size: 13px; font-weight: 700; }
   .eq-chip b { font-weight: 700; }
@@ -245,11 +311,39 @@
     <button class="btn sm" id="btnManage">จัดการระบบ</button>
     <button class="btn sm" id="btnLogout">ออกจากระบบ</button>
   </div>
-  <main>
+  <main class="layout">
+    <aside class="sidebar" id="sideBar" style="display:none">
+      <div id="sideLogoWrap"></div>
+      <div class="grp" id="siteGrpLbl" style="display:none">ไซต์</div>
+      <div class="tabs vert" id="siteTabs" style="display:none"></div>
+    </aside>
+
+    <div class="content">
     <div class="panel">
       <h2 id="custTitle">ข้อมูลลูกค้า</h2>
       <div id="custDetail" class="empty">กรุณาเลือก Customer และยืนยันรหัสเข้าถึง</div>
     </div>
+    <div class="stats" id="statRow" style="display:none"></div>
+
+    <div class="split">
+    <div class="panel" id="reportPanel" style="display:none">
+      <h2>รายงาน (PDF)</h2>
+      <div class="repwrap">
+        <div class="repmain">
+          <div class="toolbar">
+            <input type="search" id="repSearch" placeholder="ค้นหารายงาน">
+            <button class="btn sm" id="btnAddPdf">+ เพิ่ม PDF</button>
+          </div>
+          <div class="scroll">
+            <table id="repTable">
+              <thead><tr><th>ชื่อรายงาน</th><th class="siteCol">ไซต์</th><th>วันที่</th><th>ประเภท</th><th style="width:250px"></th></tr></thead>
+              <tbody id="repBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="panel" id="equipPanel" style="display:none">
       <h2>อุปกรณ์ในไซต์</h2>
       <div id="equipSummary" class="eq-sum"></div>
@@ -267,23 +361,7 @@
       </div>
     </div>
 
-    <div class="panel" id="reportPanel" style="display:none">
-      <h2>รายงาน (PDF)</h2>
-      <div class="repwrap">
-        <div class="tabs vert" id="siteTabs" style="display:none"></div>
-        <div class="repmain">
-          <div class="toolbar">
-            <input type="search" id="repSearch" placeholder="ค้นหารายงาน">
-            <button class="btn sm" id="btnAddPdf">+ เพิ่ม PDF</button>
-          </div>
-          <div class="scroll">
-            <table id="repTable">
-              <thead><tr><th>ชื่อรายงาน</th><th class="siteCol">ไซต์</th><th>วันที่</th><th>ประเภท</th><th style="width:250px"></th></tr></thead>
-              <tbody id="repBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+    </div>
     </div>
   </main>
 </div>
@@ -1006,7 +1084,8 @@ function loadSheets() {
           }
           if (!c.reports) c.reports = [];
           c.reports.push({
-            title: r.title || '', date: r.date || '', type: r.type || '', site: r.site || '',
+            title: r.title || '', date: r.date || '', time: r.time || '',
+            type: r.type || '', site: r.site || '',
             url: r.url || r.link || '', embed: r.embed || '', filename: r.filename || '', source: 'sheet'
           });
         });
@@ -1041,7 +1120,7 @@ function loadSheets() {
       renderUsers(); renderCustMgmt(); renderRepMgmt(); fillCustSelect(); renderPick();
       if (activeCust) {
         var fresh = customers.find(function (x) { return x.name.toLowerCase() === activeCust.name.toLowerCase(); });
-        if (fresh) { activeCust = fresh; renderSiteTabs(); renderReports(); renderEquip(); }
+        if (fresh) { activeCust = fresh; renderSiteTabs(); renderReports(); renderEquip(); renderSideMenu(); renderStats(); }
       }
       var n = 0; customers.forEach(function (c) { n += (c.reports || []).length; });
       var warn = (rRows && rRows.length) ? '' : '  ** ไม่พบข้อมูลรายงาน **';
@@ -1159,6 +1238,8 @@ function resetCustomerPanel() {
   $('custDetail').className = 'empty'; $('custDetail').textContent = 'กรุณาเลือก Customer และยืนยันรหัสเข้าถึง';
   $('reportPanel').style.display = 'none';
   if ($('equipPanel')) $('equipPanel').style.display = 'none';
+  if ($('sideBar')) $('sideBar').style.display = 'none';
+  if ($('statRow')) $('statRow').style.display = 'none';
 }
 
 /* ================= PICK CUSTOMER ================= */
@@ -1268,14 +1349,8 @@ function grantAccess(cust, byAdmin, silent) {
       '<div>สถานะ</div><div>' + (byAdmin ? 'เข้าถึงด้วยสิทธิ์ Admin' : 'ยืนยันรหัสเข้าถึงแล้ว') + '</div>' +
     '</div>' +
     '<div><div class="fieldlbl">ที่อยู่</div><div class="addrbox">' + (esc(cust.address) || '-') + '</div></div>' +
-    '<div>' +
-      '<div class="logobox' + (cust.logo ? ' filled' : '') + '">' + (cust.logo ? '<img src="' + esc(cust.logo) + '" alt="โลโก้ลูกค้า" style="width:' + (cust.logoW || 160) + 'px">' : '') + '</div>' +
-      (mgr ? '<div class="logoactions">' +
-        '<button class="btn sm ghost" id="btnSetLogo">' + (cust.logo ? 'แก้ไขโลโก้' : 'ใส่ลิงก์โลโก้') + '</button>' +
-      '</div>' : '') +
-    '</div>' +
   '</div>';
-  if (mgr && $('btnSetLogo')) $('btnSetLogo').addEventListener('click', openLogoDialog);
+  renderSideLogo(cust, mgr);
   $('reportPanel').style.display = '';
   renderEquip();
   $('btnAddPdf').style.display = isMgr() ? '' : 'none';
@@ -1284,6 +1359,7 @@ function grantAccess(cust, byAdmin, silent) {
   if (!silent) activeSite = '';
   renderSiteTabs();
   renderReports();
+  renderSideMenu(); renderStats();
   saveSession();
 }
 
@@ -1349,7 +1425,7 @@ function renderSiteTabs() {
 $('siteTabs').addEventListener('click', function (e) {
   var b = e.target.closest('.tab'); if (!b) return;
   activeSite = b.dataset.site || '';
-  renderSiteTabs(); renderReports(); renderEquip(); saveSession();
+  renderSiteTabs(); renderReports(); renderEquip(); renderSideMenu(); renderStats(); saveSession();
 });
 
 /* ไอคอน PDF วาดด้วย SVG ในไฟล์เลย ไม่ต้องโหลดรูปจากที่อื่น
@@ -1361,6 +1437,73 @@ var PDF_ICON =
     '<text x="12.2" y="18.2" font-family="Arial,Helvetica,sans-serif" font-size="7.2"' +
     ' font-weight="bold" fill="#ffffff" text-anchor="middle">PDF</text>' +
   '</svg>';
+
+/* ---------- แถบเมนูซ้าย ----------
+   โลโก้ + เมนูสลับหน้า (รายงาน / อุปกรณ์) + รายการไซต์
+   ย้ายโลโก้ออกจากการ์ดข้อมูลลูกค้า เพราะลูกค้าที่ยังไม่ใส่รูป
+   จะเหลือกรอบว่างเป็นช่องโหว่กลางการ์ด */
+function renderSideLogo(cust, mgr) {
+  var box = $('sideLogoWrap');
+  if (!box) return;
+  var has = !!(cust && cust.logo);
+
+  /* ไม่มีโลโก้และไม่มีสิทธิ์แก้ ก็ไม่ต้องแสดงอะไรเลย */
+  if (!has && !mgr) { box.innerHTML = ''; return; }
+
+  box.innerHTML =
+    '<div class="sidelogo' + (has ? '' : ' empty-logo') + '">' +
+      (has ? '<img src="' + esc(cust.logo) + '" alt="โลโก้ลูกค้า" style="width:' +
+             (cust.logoW || 160) + 'px;max-width:100%">'
+           : 'ยังไม่มีโลโก้') +
+    '</div>' +
+    (mgr ? '<div class="logoactions"><button class="btn sm ghost" id="btnSetLogo">' +
+           (has ? 'แก้ไขโลโก้' : 'ใส่ลิงก์โลโก้') + '</button></div>' : '');
+
+  if (mgr && $('btnSetLogo')) $('btnSetLogo').addEventListener('click', openLogoDialog);
+}
+
+/* ---------- ช่องสรุปด้านบน ----------
+   นับจากข้อมูลที่มีอยู่แล้ว ไม่ต้องกรอกเพิ่มในชีต
+   และนับเฉพาะไซต์ที่กำลังเลือกอยู่ */
+function renderStats() {
+  var row = $('statRow');
+  if (!row || !activeCust) { if (row) row.style.display = 'none'; return; }
+
+  var inSite = function (x) { return !activeSite || (x.site || '') === activeSite; };
+  var reps = (activeCust.reports || []).filter(inSite).length;
+  var eq   = (activeCust.equip || []).filter(inSite);
+
+  var qty = function (e) { return Math.max(parseInt(e.qty, 10) || 1, 1); };
+  var sum = function (cls) {
+    return eq.reduce(function (n, e) { return n + (eqClass(e.status) === cls ? qty(e) : 0); }, 0);
+  };
+
+  var ok   = sum('eq-ok');
+  var warn = sum('eq-warn') + sum('eq-wait');
+  var bad  = sum('eq-bad')  + sum('eq-rep');
+
+  var cards = [['dark', reps, 'รายงานทั้งหมด']];
+  if (eq.length) {
+    cards.push(['ok', ok, 'ปกติ'], ['warn', warn, 'เฝ้าระวัง / รอซ่อม'], ['bad', bad, 'ชำรุด / ควรเปลี่ยน']);
+  }
+
+  row.style.display = '';
+  row.innerHTML = cards.map(function (c) {
+    return '<div class="stat ' + c[0] + '"><div class="v">' + c[1] + '</div>' +
+           '<div class="l">' + esc(c[2]) + '</div></div>';
+  }).join('');
+}
+
+/* แสดงแถบซ้ายและป้ายกลุ่มไซต์ตามข้อมูลที่มี */
+function renderSideMenu() {
+  var bar = $('sideBar');
+  if (!bar) return;
+  if (!activeCust) { bar.style.display = 'none'; return; }
+  bar.style.display = '';
+
+  var sites = sitesOf(activeCust);
+  if ($('siteGrpLbl')) $('siteGrpLbl').style.display = (sites && sites.length) ? '' : 'none';
+}
 
 /* ---------- ทะเบียนอุปกรณ์ (อ่านอย่างเดียว แก้ที่ Google Sheet) ---------- */
 var EQ_STATUS = [
@@ -1395,7 +1538,7 @@ function renderEquip() {
   if (!panel || !activeCust) return;
 
   var all = activeCust.equip || [];
-  /* ไม่มีข้อมูลอุปกรณ์เลยก็ซ่อนการ์ดไปทั้งใบ ไม่ให้หน้าเว็บรก */
+  /* ลูกค้าที่ยังไม่มีข้อมูลอุปกรณ์ ซ่อนการ์ดไปเลย รายงานจะขยายเต็มความกว้าง */
   if (!all.length) { panel.style.display = 'none'; return; }
   panel.style.display = '';
 
@@ -1415,6 +1558,8 @@ function renderEquip() {
   $('equipBody').innerHTML = list.map(function (e, i) {
     var brandModel = [e.brand, e.model].filter(Boolean).join(' ') || '-';
     var extra = [
+      ['ยี่ห้อ / รุ่น', brandModel === '-' ? '' : brandModel],
+      ['ซีเรียล', e.serial], ['จำนวน', e.qty],
       ['ขนาด', e.capacity], ['ตำแหน่งติดตั้ง', e.location],
       ['วันที่ติดตั้ง', e.installed], ['บริการล่าสุด', e.lastservice],
       ['ไซต์', e.site], ['หมายเหตุ / ปัญหาที่พบ', e.note]
@@ -1459,7 +1604,7 @@ function renderReports() {
   var q = $('repSearch').value.trim().toLowerCase();
   var list = (activeCust.reports || []).filter(function (r) {
     if (activeSite && (r.site || '') !== activeSite) return false;
-    return !q || [r.title, r.date, r.type, r.site].join(' ').toLowerCase().indexOf(q) > -1;
+    return !q || [r.title, r.date, r.time, r.type, r.site].join(' ').toLowerCase().indexOf(q) > -1;
   });
   $('repBody').innerHTML = list.map(function (r) {
     var i = activeCust.reports.indexOf(r);
@@ -1473,7 +1618,8 @@ function renderReports() {
     /* data-label ใช้แสดงชื่อคอลัมน์กำกับหน้าค่า ตอนจอแคบที่ซ่อนหัวตาราง */
     return '<tr><td class="c-title">' + esc(r.title) + '</td>' +
       '<td class="siteCol" data-label="ไซต์"' + (sites ? '' : ' style="display:none"') + '>' + esc(r.site || '-') + '</td>' +
-      '<td data-label="วันที่">' + esc(r.date) + '</td>' +
+      '<td data-label="วันที่">' + esc(r.date) +
+        (r.time ? '<span class="r-time">' + esc(r.time) + ' น.</span>' : '') + '</td>' +
       '<td data-label="ประเภท">' + esc(r.type || '-') + '</td>' +
       '<td><div class="row-actions">' + btns + delBtn + '</div></td></tr>';
   }).join('') || '<tr><td colspan="5" style="color:#777">ยังไม่มีรายงานในส่วนนี้</td></tr>';
@@ -1665,7 +1811,7 @@ function commitPdf(rec) {
   }
   logEvent('file', 'เพิ่มรายงาน "' + rec.title + '" ให้ ' + activeCust.name + (rec.site ? ' / ' + rec.site : ''));
   closeM('addPdfOverlay');
-  renderSiteTabs(); renderReports(); renderEquip(); renderCustMgmt(); renderRepMgmt(); renderPick();
+  renderSiteTabs(); renderReports(); renderEquip(); renderSideMenu(); renderStats(); renderCustMgmt(); renderRepMgmt(); renderPick();
 }
 
 /* ================= PROFILE / รูปประจำตัว ================= */
